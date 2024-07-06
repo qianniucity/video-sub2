@@ -1,9 +1,7 @@
 "use client"
 
-import React, { useRef } from 'react';
-import Player from './Player';
-import SubtitleEditor from './SubtitleEditor';
-import TimelineDisplay from './TimelineDisplay';
+import React, { useRef, useState } from 'react';
+import SubtitleUpload from './SubtitleUpload';
 import { Timeline } from '../type/Timeline';
 import VideoPlayer from './VideoPlayer';
 import WaveformViewer from './WaveformViewer';
@@ -11,29 +9,32 @@ import SubtitleTable from './SubtitleTable';
 
 interface VideoPageProps {
     timeline?: Timeline;
-    videoUrl: string;
+    videoUrl?: string;
     subtitleUrl?: string;
 }
 
-const VideoPage: React.FC<VideoPageProps> = ({ videoUrl, subtitleUrl }) => {
+const defaultVideoUrl = '/video/video.mp4';
+const defaultSubtitleUrl = '/video/ap.vtt';
 
-    const timeline = new Timeline();
-    timeline.addSubtitle('00:00:01,000', '00:00:05,000', 'Hello, world!');
-    console.log(timeline.getSubtitles());
+const VideoPage: React.FC = () => {
 
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [subtitleContent, setSubtitleContent] = useState('');
+    const [subtitleUrl, setSubtitleUrl] = useState(defaultSubtitleUrl);
+    const [timeline, setTimeline] = useState('');
+    const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
+    const [subtitles, setSubtitles] = useState([]);
 
     return (
         <div className="video-page">
             <div className="top-section" style={{ display: 'flex', flexDirection: 'row' }}>
-                <div className="player" style={{ flexBasis: '70%' }}>
+                <div className="player" style={{ flexBasis: '50%' }}>
                     <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} subtitleUrl={subtitleUrl} />
                 </div>
-                <div className="subtitle-editor" style={{ flexBasis: '15%' }}>
-                    <SubtitleEditor />
-                </div>
-                <div className="subtitle-editor" style={{ flexBasis: '15%' }}>
-                    <SubtitleTable />
+                <div className="subtitle-editor" style={{ flexBasis: '50%' }}>
+                    <SubtitleUpload subtitleContent={subtitleContent} setSubtitleContent={setSubtitleContent} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} />
+                    <br />
+                    <SubtitleTable subtitles={subtitles} />
                 </div>
             </div>
             <div className="bottom-section">

@@ -3,7 +3,7 @@ import { getExt } from '../utils/common';
 import { srtToVtt, urlToArr, vttToUrl } from '../utils/subtitletrans';
 import assToVtt from '../utils/assToVtt';
 
-interface SubtitleEditorProps {
+interface SubtitleUploadProps {
     subtitleContent: string;
     subtitleUrl?: string;
     setSubtitleContent: (content: string) => void;
@@ -11,7 +11,7 @@ interface SubtitleEditorProps {
     setSubtitles?: (subtitles: any) => void;
 }
 
-const SubtitleEditor: React.FC<SubtitleEditorProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles }) => {
+const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles }) => {
 
     // 上传字幕文件
     const uploadSubtitle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,4 +87,4 @@ const SubtitleEditor: React.FC<SubtitleEditorProps> = ({ subtitleContent, setSub
     );
 };
 
-export default SubtitleEditor;
+export default SubtitleUpload;

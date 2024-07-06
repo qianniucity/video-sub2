@@ -28,7 +28,7 @@ export async function urlToArr(url: string): Promise<Sub[]> {
         $track.src = url;
     });
 }
-
+//创建vtt字幕的Blob对象 方便track分析 参数为vtt格式的字符串 返回该对象的url
 export function vttToUrl(vttText: string): string {
     return URL.createObjectURL(
         new Blob([vttText], {

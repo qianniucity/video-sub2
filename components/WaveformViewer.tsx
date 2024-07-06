@@ -114,8 +114,6 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl }) =
                     slider.removeEventListener('input', handleInput);
                 };
             }
-
-
         })
     };
 
@@ -128,7 +126,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl }) =
                 wsRegions.addRegion({
                     start: subtitle.start,
                     end: subtitle.end,
-                    content: subtitle.content,
+                    content: subtitle.text,
                     resize: true,
                     // channelIdx: 1,
                     contentEditable: true,
