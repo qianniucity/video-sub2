@@ -28,12 +28,11 @@ const VideoPage: React.FC<VideoPageProps> = ({ videoUrl, subtitleUrl }) => {
             <div className="top-section" style={{ display: 'flex', flexDirection: 'row' }}>
                 <div className="player" style={{ flexBasis: '70%' }}>
                     <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} subtitleUrl={subtitleUrl} />
-
                 </div>
-                {/* <div className="subtitle-editor" style={{ flexBasis: '30%' }}>
+                <div className="subtitle-editor" style={{ flexBasis: '15%' }}>
                     <SubtitleEditor />
-                </div> */}
-                <div className="subtitle-editor" style={{ flexBasis: '30%' }}>
+                </div>
+                <div className="subtitle-editor" style={{ flexBasis: '15%' }}>
                     <SubtitleTable />
                 </div>
             </div>
