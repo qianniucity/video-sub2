@@ -38,7 +38,7 @@ const VideoPage: React.FC = () => {
                 </div>
             </div>
             <div className="bottom-section">
-                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} />
+                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={subtitles} />
             </div>
             <style jsx>{`
                 .video-page {

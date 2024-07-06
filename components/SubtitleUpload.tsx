@@ -20,15 +20,14 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
         const reader = new FileReader();
         const type = getExt(file.name);
         reader.onload = (e) => {
-            const result = reader.result as string;
+            let text = reader.result as string;
             if (type === 'srt') {
-                srtToVtt(result);
+                text = srtToVtt(text);
             } else if (type === 'ass') {
-                assToVtt(result);
+                text = assToVtt(text);
             } else {
-                result.replace(/{[\s\S]*?}/g, '');
+                text = text.replace(/{[\s\S]*?}/g, '');
             }
-            const text = e.target?.result;
             if (!text) return;
 
             setSubtitleContent(text as string);

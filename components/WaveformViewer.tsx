@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
-import subtitles from "../public/video/subtitle.json";
 import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.esm.js'
 import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import Minimap from 'wavesurfer.js/dist/plugins/minimap.esm.js'
@@ -10,9 +9,10 @@ import Minimap from 'wavesurfer.js/dist/plugins/minimap.esm.js'
 interface WaveformViewerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
     videoUrl: string;
+    subtitles: any[];
 }
 
-const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl }) => {
+const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles }) => {
     const waveSurferRef = useRef<WaveSurfer>(); // 用于引用WaveSurfer实例
     const waveContainerRef = useRef<HTMLDivElement>(null);
     const sliderRef = useRef<HTMLInputElement>(null);
@@ -117,6 +117,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl }) =
         })
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const createRegions = (ws: WaveSurfer) => {
         const wsRegions = ws.registerPlugin(RegionsPlugin.create());
 
@@ -151,7 +152,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl }) =
         if (ws) createZoom(ws);
 
         return () => waveSurferRef.current?.destroy();
-    }, [initializeWaveSurfer, videoUrl]);
+    }, [createRegions, initializeWaveSurfer, videoUrl]);
 
     return (
         <>

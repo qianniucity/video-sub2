@@ -73,6 +73,7 @@ export function arrToVtt(arr: { start: string; end: string; text: string }[]): s
 export function srtToVtt(srtText: string): string {
     return 'WEBVTT \r\n\r\n'.concat(
         srtText
+            .replace(/^\d+\s*\r?\n/gm, '') // 修改的代码行，用于移除数字序号所在的行
             .replace(/\{\\([ibu])\}/g, '</$1>')
             .replace(/\{\\([ibu])1\}/g, '<$1>')
             .replace(/\{([ibu])\}/g, '<$1>')
