@@ -3,9 +3,10 @@ import React, { useRef } from 'react';
 interface VideoPlayerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
     videoUrl: string;
+    subtitleUrl?: string;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef, videoUrl }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef, videoUrl, subtitleUrl }) => {
     return (
         <video
             ref={videoRef}
@@ -15,7 +16,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef, videoUrl }) => {
             style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', display: 'block' }}
         >
             <track
-                src="/video/ap.vtt"
+                src={subtitleUrl}
                 kind="subtitles"
                 srcLang="en"
                 label="English" />

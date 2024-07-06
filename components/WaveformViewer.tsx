@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
+import subtitles from "../public/video/subtitle.json";
+import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.esm.js'
 
 interface WaveformViewerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
@@ -40,49 +42,46 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl }) =
 
         const ws = waveSurferRef.current = WaveSurfer.create({
             container: waveContainerRef.current,
-            waveColor: 'violet',
-            progressColor: 'purple',
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
             cursorColor: '#672fbc',
-            hideScrollbar: true,
+            // hideScrollbar: true,
+            autoScroll: true,
+            autoCenter: true,
+            normalize: true,
             media: videoRef.current,
             url: videoUrl,
             plugins: [topTimeline, bottomTimeline],
-
+            minPxPerSec: 50,
         });
-
         return ws;
+    };
+    const createZoom = (ws: WaveSurfer) => {
+        // Initialize the Zoom plugin
+        ws.registerPlugin(
+            ZoomPlugin.create({
+                // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
+                scale: 0.5,
+                // Optionally, specify the maximum pixels-per-second factor while zooming
+                maxZoom: 200,
+            }),
+        )
     };
 
     const createRegions = (ws: WaveSurfer) => {
         const wsRegions = ws.registerPlugin(RegionsPlugin.create());
 
+        // 添加字幕区域
         ws.on('decode', () => {
-            wsRegions.addRegion({
-                id: "1",
-                start: 0,
-                end: 5.0123123123,
-                content: 'Resize me12123123123132132',
-                resize: true,
-                channelIdx: 1,
-                contentEditable: true,
-            });
-            wsRegions.addRegion({
-                id: "2",
-                start: 9,
-                end: 12,
-                content: 'Cramped region12312313212323',
-                resize: true,
-                channelIdx: 1,
-                contentEditable: true,
-            });
-            wsRegions.addRegion({
-                id: "3",
-                start: 20,
-                end: 27,
-                content: 'Drag me',
-                resize: true,
-                channelIdx: 1,
-                contentEditable: true,
+            subtitles.forEach((subtitle) => {
+                wsRegions.addRegion({
+                    start: subtitle.start,
+                    end: subtitle.end,
+                    content: subtitle.content,
+                    resize: true,
+                    // channelIdx: 1,
+                    contentEditable: true,
+                });
             });
         });
 
@@ -100,6 +99,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl }) =
     useEffect(() => {
         const ws = initializeWaveSurfer();
         if (ws) createRegions(ws);
+        if (ws) createZoom(ws);
 
         return () => waveSurferRef.current?.destroy();
     }, [initializeWaveSurfer, videoUrl]);
