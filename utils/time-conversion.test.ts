@@ -19,6 +19,11 @@ describe('Time Conversion Tests', () => {
         expect(DT.t2d('01:01:01.000')).toBe(3661.000);
     });
     test('t2d converts time string to duration correctly', () => {
+        console.log(DT.t2d('00:00:00.050'));
+        expect(DT.t2d('00:00:00.050')).toBe(0.05);
+    });
+    
+    test('t2d converts time string to duration correctly', () => {
         expect(DT.t2d('00:00:00.1')).toBe(0.1);
     });
 

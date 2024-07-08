@@ -2,13 +2,13 @@
 
 import React, { useRef, useState } from 'react';
 import SubtitleUpload from './SubtitleUpload';
-import { Timeline } from '../type/Timeline';
 import VideoPlayer from './VideoPlayer';
 import WaveformViewer from './WaveformViewer';
 import SubtitleTable from './SubtitleTable';
+import Subtitle from '@/type/subtitle';
+import WaveSurfer from 'wavesurfer.js';
 
 interface VideoPageProps {
-    timeline?: Timeline;
     videoUrl?: string;
     subtitleUrl?: string;
 }
@@ -23,7 +23,10 @@ const VideoPage: React.FC = () => {
     const [subtitleUrl, setSubtitleUrl] = useState(defaultSubtitleUrl);
     const [timeline, setTimeline] = useState('');
     const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
-    const [subtitles, setSubtitles] = useState([]);
+    const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
+    const [wavesurferState, setWavesurferState] = useState<WaveSurfer>();
+
+
 
     return (
         <div className="video-page">
@@ -34,11 +37,11 @@ const VideoPage: React.FC = () => {
                 <div className="subtitle-editor" style={{ flexBasis: '50%' }}>
                     <SubtitleUpload subtitleContent={subtitleContent} setSubtitleContent={setSubtitleContent} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} />
                     <br />
-                    <SubtitleTable subtitles={subtitles} />
+                    <SubtitleTable subtitles={subtitles} setSubtitles={setSubtitles} setSubtitleUrl={setSubtitleUrl} wavesurferState={wavesurferState} />
                 </div>
             </div>
             <div className="bottom-section">
-                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={subtitles} />
+                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={subtitles} setWavesurferState={setWavesurferState} />
             </div>
             <style jsx>{`
                 .video-page {

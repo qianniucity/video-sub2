@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 import { Inter as FontSans } from "next/font/google"
 import React, { ReactNode } from "react";
+import { Toaster } from "@/components/ui/toaster"
 
 import { cn } from "@/lib/utils"
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         )}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   )

@@ -1,8 +1,8 @@
-import assToVtt from './assToVtt';
-import Sub from './sub';
+import assToVtt from '@/utils/assToVtt';
+import Subtitle from '@/type/subtitle';
 import { getExt, secondToTime } from './common';
 
-export async function urlToArr(url: string): Promise<Sub[]> {
+export async function urlToArr(url: string): Promise<Subtitle[]> {
     if (typeof window === 'undefined') {
         throw new Error('urlToArr can only be used in the browser');
     }
@@ -21,7 +21,7 @@ export async function urlToArr(url: string): Promise<Sub[]> {
                     const start = secondToTime(item.startTime);
                     const end = secondToTime(item.endTime);
                     const text = (item as TextTrackCue & { text: string }).text;
-                    return new Sub({ start, end, text });
+                    return new Subtitle({ start, end, text });
                 }),
             );
         };
@@ -56,6 +56,16 @@ export function vttToUrlWorker(): string {
                 ))
             }`,
         ]),
+    );
+}
+
+export function subtitlesToUrl(subtitles: Subtitle[]): string {
+    // 转换为vtt格式
+    const vttContent = `WEBVTT\n\n${subtitles.map((item, index) => 
+        `${index + 1}\n${item.start} --> ${item.end}\n${item.text}`).join('\n\n')}`;
+
+    return URL.createObjectURL(
+        new Blob([vttContent], { type: 'text/vtt' })
     );
 }
 

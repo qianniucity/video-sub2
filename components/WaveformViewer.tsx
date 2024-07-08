@@ -1,21 +1,26 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
 import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.esm.js'
 import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import Minimap from 'wavesurfer.js/dist/plugins/minimap.esm.js'
+import subtitle from '../public/video/subtitle.json';
+import Subtitle from '@/type/subtitle';
 
 interface WaveformViewerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
     videoUrl: string;
-    subtitles: any[];
+    subtitles: Subtitle[];
+    setWavesurferState?: (wavesurfer: WaveSurfer) => void;
+
 }
 
-const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles }) => {
+const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles, setWavesurferState }) => {
     const waveSurferRef = useRef<WaveSurfer>(); // 用于引用WaveSurfer实例
     const waveContainerRef = useRef<HTMLDivElement>(null);
     const sliderRef = useRef<HTMLInputElement>(null);
+    const [loop, setLoop] = useState(false); // 使用 useState 管理 'loop' 状态
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const initializeWaveSurfer = () => {
@@ -76,19 +81,21 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
             plugins: [topTimeline, bottomTimeline, hoverLine, minimap],
             minPxPerSec: 50,
         });
+
+
         return ws;
     };
 
     const createZoom = (ws: WaveSurfer) => {
-        // Initialize the Zoom plugin
-        ws.registerPlugin(
-            ZoomPlugin.create({
-                // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
-                scale: 0.5,
-                // Optionally, specify the maximum pixels-per-second factor while zooming
-                maxZoom: 200,
-            }),
-        );
+        // 使用鼠标滚轮缩放波形
+        // ws.registerPlugin(
+        //     ZoomPlugin.create({
+        //         // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
+        //         scale: 0.5,
+        //         // Optionally, specify the maximum pixels-per-second factor while zooming
+        //         maxZoom: 200,
+        //     }),
+        // );
 
         // Update the zoom level on slider change
         ws.once('decode', () => {
@@ -123,14 +130,14 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
 
         // 添加字幕区域
         ws.on('decode', () => {
-            subtitles.forEach((subtitle) => {
+            subtitle.forEach((subtitle) => {
                 wsRegions.addRegion({
                     start: subtitle.start,
                     end: subtitle.end,
                     content: subtitle.text,
                     resize: true,
-                    // channelIdx: 1,
-                    contentEditable: true,
+                    channelIdx: 1,
+                    // contentEditable: true,
                 });
             });
         });
@@ -146,22 +153,79 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
     };
 
 
+    // const clickWaveform = (ws: WaveSurfer) => {
+    //     const wsRegions = ws.registerPlugin(RegionsPlugin.create());
+    //     let activeRegion = null; // 显式指定类型
+    //     wsRegions.on('region-in', (region) => {
+    //         console.log('region-in', region)
+    //         activeRegion = region
+    //     })
+    //     wsRegions.on('region-out', (region) => {
+    //         console.log('region-out', region)
+    //         if (activeRegion === region) {
+    //             if (loop) {
+    //                 region.play()
+    //             } else {
+    //                 activeRegion = null
+    //             }
+    //         }
+    //     })
+    //     wsRegions.on('region-clicked', (region, e) => {
+    //         e.stopPropagation() // prevent triggering a click on the waveform
+    //         activeRegion = region
+    //         region.play()
+    //         region.setOptions({
+    //             color: 'rgba(255, 0, 0, 0.5)',
+    //             start: 0
+    //         })
+    //     })
+    //     // Reset the active region when the user clicks anywhere in the waveform
+    //     ws.on('interaction', () => {
+    //         activeRegion = null
+    //     })
+    // };
+
+
     useEffect(() => {
         const ws = initializeWaveSurfer();
+        // if (ws && setWavesurferState) {
+        //     setWavesurferState(ws);
+        // }
         if (ws) createRegions(ws);
         if (ws) createZoom(ws);
 
         return () => waveSurferRef.current?.destroy();
-    }, [createRegions, initializeWaveSurfer, videoUrl]);
+    }, [createRegions, initializeWaveSurfer, setWavesurferState, videoUrl]);
+
+    // const handleLoop = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     setLoop(e.target.checked); // 更新 'loop' 状态
+    //     console.log(e.target.checked);
+    // }
 
     return (
         <>
             <div ref={waveContainerRef} style={{ width: '100%', margin: '20px auto' }} />
-            <label>
-                Zoom: <input ref={sliderRef} type="range" min="10" max="200" defaultValue="50" />
-            </label>
+            <div className="flex">
+                {/* <div className="flex items-center h-5">
+                    <input
+                        id="helper-checkbox"
+                        aria-describedby="helper-checkbox-text"
+                        type="checkbox"
+                        defaultValue=""
+                        onChange={handleLoop}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                </div>
+                <div className="ms-2 text-sm">
+                    <label htmlFor="helper-checkbox" className="font-medium text-gray-900 dark:text-gray-300">当前字幕循环</label>
+                    <p id="helper-checkbox-text" className="text-xs font-normal text-gray-500 dark:text-gray-300">勾选后，当前字幕会持续循环播放</p>
+                </div> */}
+                <div className="ms-2 text-sm">
+                    <label>
+                        音波缩放: <input ref={sliderRef} type="range" min="10" max="200" defaultValue="50" />
+                    </label>
+                </div>
+            </div>
         </>
-
     );
 }
 

@@ -2,13 +2,13 @@ import React from 'react';
 import { getExt } from '../utils/common';
 import { srtToVtt, urlToArr, vttToUrl } from '../utils/subtitletrans';
 import assToVtt from '../utils/assToVtt';
+import Subtitle from '@/type/subtitle';
 
 interface SubtitleUploadProps {
     subtitleContent: string;
-    subtitleUrl?: string;
     setSubtitleContent: (content: string) => void;
     setSubtitleUrl: (url: string) => void;
-    setSubtitles?: (subtitles: any) => void;
+    setSubtitles: (subtitles: Subtitle[]) => void;
 }
 
 const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles }) => {
@@ -34,7 +34,7 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
             const subUrl = createSubtitleUrl(text as string);
             const subArray = urlToArr(subUrl)
             subArray.then((result) => {
-                if (setSubtitles) setSubtitles(result);
+                if (setSubtitles && result.length > 0) setSubtitles(result);
                 console.log('subArray', result); // 这里的result就是Promise解析后的值
             }).catch((error) => {
                 console.error('subArray Error', error); // 如果Promise被拒绝，这里会捕获到错误

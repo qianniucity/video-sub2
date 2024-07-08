@@ -12,7 +12,7 @@ const TimelineView: React.FC<PlayerProps> = ({ videoUrl }) => {
   return (
     <>
       <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} />
-      <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} />
+      <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={[]} />
     </>
   );
 }
