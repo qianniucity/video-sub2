@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
 interface VideoPlayerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
@@ -17,7 +17,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef, videoUrl, subtitleU
         >
             <track
                 src={subtitleUrl}
-                kind="subtitles"
+                kind="captions"
                 srcLang="en"
                 label="English" />
         </video>

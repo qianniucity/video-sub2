@@ -75,3 +75,13 @@ export function convertToSrtFormat(subtitles: Subtitle[]): string {
         })
         .join('\n');
 }
+
+// 生成一个介于 min 和 max 之间的随机数
+export function random(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+}
+
+// 生成一个随机的 RGBA 颜色字符串
+export function randomColor(): string {
+    return `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`;
+}

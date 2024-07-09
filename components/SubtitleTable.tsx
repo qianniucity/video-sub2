@@ -23,6 +23,18 @@ import {
 //     // 更多字幕...
 // ];
 
+/**
+ * Props for the SubtitleTable component.
+ * 
+ * @prop subtitles - The array of subtitle objects.
+ * @prop setSubtitles - Function to set the subtitles.
+ * @prop setSubtitleUrl - Function to set the subtitle URL.
+ * @prop wavesurferState - The WaveSurfer state.
+ * @prop subtitle - The subtitle object.
+ * @prop setSubtitle - Function to set the subtitle.
+ * @prop scrollIndex - The scroll index.
+ * 
+ */
 interface SubtitleTableProps {
     subtitles: Subtitle[];
     setSubtitles?: (subtitles: Subtitle[]) => void;
@@ -30,19 +42,30 @@ interface SubtitleTableProps {
     wavesurferState?: WaveSurfer;
     subtitle: Subtitle;
     setSubtitle: (subtitle: Subtitle) => void;
-    currentTimeLineContent: Subtitle;
     scrollIndex: number;
 }
 
-const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, wavesurferState, subtitle, setSubtitle, currentTimeLineContent, scrollIndex }) => {
+/**
+ * Component for displaying and editing subtitles in a table format.
+ * 
+ * @component
+ * @param {SubtitleTableProps} props - The subtitle table props.
+ * @returns {JSX.Element} The subtitle table component.
+ */
+const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, wavesurferState, subtitle, setSubtitle, scrollIndex }) => {
 
 
-    const [index, setIndex] = useState(-1);
-    const { toast } = useToast()
-    const storage = new Storage();
-    const [history, setHistory] = useState<Subtitle[][]>([]);
+    const [index, setIndex] = useState(-1);// 使用 useState 管理 'index' 状态
+    const { toast } = useToast();// 使用 useToast 自定义 hook
+    const storage = new Storage();// 创建 Storage 实例
+    const [history, setHistory] = useState<Subtitle[][]>([]);// 使用 useState 管理 'history' 状态
 
 
+    /**
+     * 编辑字幕
+     * @param sub   字幕对象
+     * 
+     */
     const onEdit = (sub: Subtitle) => {
         const index = subtitles.indexOf(sub);
         setSubtitle(sub);
@@ -50,6 +73,10 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
         editSubtitle(sub);
     }
 
+    /**
+     * 更新字幕
+     * 
+     */
     const onUpdate = () => {
         if (check()) {
             updateSubtitle(index, new Subtitle({ start: subtitle.start, end: subtitle.end, text: subtitle.text }));
@@ -58,18 +85,31 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
         }
     }
 
+    /**
+     * 修改字幕内容
+     * @param name  
+     * @param value 
+     */
     const onChange = (name: string, value: string) => {
         const updatedSubtitle = new Subtitle({ ...subtitle, [name as keyof Subtitle]: value });
         setSubtitle(updatedSubtitle);
     }
 
+    /**
+     * 删除字幕
+     * @param sub  字幕对象
+     */
     const onRemove = (sub: Subtitle) => {
         removeSubtitle(sub);
         setSubtitle(new Subtitle({ start: '', end: '', text: '' }));
         setIndex(-1);
     }
 
-    // 删除单个字幕
+    /**
+     * 删除单个字幕
+     * @param sub 
+     * @returns 
+     */
     const removeSubtitle = (sub: Subtitle) => {
         if (!checkSub(sub)) return;
         const index = subtitles.indexOf(sub);
@@ -83,6 +123,10 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
     }
 
 
+    /**
+     * 检查字幕时间是否合法
+     * @returns 
+     */
     const check = () => {
         const startTime = timeToSecond(subtitle.start);
         const endTime = timeToSecond(subtitle.end);
@@ -153,6 +197,11 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
         // });
     }
 
+    /**
+     * 点击行
+     * @param rowData 
+     * @returns 
+     */
     const handleRowClick = (rowData: Subtitle) => {
         console.log("rowData", rowData)
         if (!checkSub(rowData)) return;
@@ -169,6 +218,31 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
         // console.log("Row clicked:", rowData);
         // 在这里添加你想要执行的逻辑
         videoSeek(rowData);
+    }
+
+    // 删除缓存
+    const removeCache = () => {
+        storage.del('subtitles');
+        window.location.reload();
+    }
+
+    // 历史回滚
+    const undoSubtitle = () => {
+        history.pop();
+        const subtitles = history[history.length - 1];
+        if (subtitles) {
+            updateSubtitles(subtitles, true, true).then(() => {
+                toast({
+                    title: "success",
+                    description: "history",
+                })
+            });
+        } else {
+            toast({
+                title: "warning",
+                description: "historyEmpty",
+            })
+        }
     }
 
 
@@ -259,19 +333,6 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
         return (previous && sub.startTime < previous.endTime) || !sub.check;
     }
 
-    // const activeRowIndex = () => {
-    //     console.log("currentTimeLineContent", currentTimeLineContent)
-
-    //     if (!checkSub(currentTimeLineContent)) return;
-    //     console.log("indexindexindexindexindexindexindexindexindexindex")
-    //     const index = subtitles.indexOf(currentTimeLineContent);
-    //     console.log("index",index)
-    //     setScrollIndex(index)
-    // }
-
-    // const getRandomInt = (): number => {
-    //     return Math.floor(Math.random() * 60);
-    // };
 
     useEffect(() => {
         console.log("scrollIndex-Table", scrollIndex);

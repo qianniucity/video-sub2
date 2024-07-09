@@ -1,7 +1,7 @@
 import React from 'react';
-import { getExt, convertToSrtFormat } from '../utils/common';
-import { srtToVtt, urlToArr, vttToUrl } from '../utils/subtitletrans';
-import assToVtt from '../utils/assToVtt';
+import { getExt, convertToSrtFormat } from '@/utils/common';
+import { srtToVtt, urlToArr, vttToUrl } from '@/utils/subtitletrans';
+import assToVtt from '@/utils/assToVtt';
 import Subtitle from '@/type/subtitle';
 
 interface SubtitleUploadProps {
@@ -20,7 +20,7 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
         if (!file) return;
         const reader = new FileReader();
         const type = getExt(file.name);
-        reader.onload = (e) => {
+        reader.onload = () => {
             let text = reader.result as string;
             if (type === 'srt') {
                 text = srtToVtt(text);
@@ -51,6 +51,11 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
 
 
 
+    /**
+     * 创建字幕 url 地址 
+     * @param subtitleContent 
+     * @returns 
+     */
     const createSubtitleUrl = (subtitleContent: string) => {
         // 创建vtt字幕的Blob对象 方便track分析 参数为vtt格式的字符串 返回该对象的url
         const subUrl = vttToUrl(subtitleContent);
@@ -58,8 +63,10 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
         return subUrl;
     }
 
-
-
+    /**
+     * Handles the save functionality by converting the subtitles to SRT format and downloading the file.
+     * 
+     */
     const handleSave = () => {
         const element = document.createElement("a");
         const file = new Blob([subtitles ? convertToSrtFormat(subtitles) : subtitleContent], { type: 'text/plain' });

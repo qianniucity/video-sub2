@@ -1,8 +1,18 @@
 import React from 'react';
-import { getExt } from '../utils/common';
-import { srtToVtt, urlToArr, vttToUrl } from '../utils/subtitletrans';
-import assToVtt from '../utils/assToVtt';
+import { getExt } from '@/utils/common';
+import { srtToVtt, urlToArr, vttToUrl } from '@/utils/subtitletrans';
+import assToVtt from '@/utils/assToVtt';
 
+/**
+ * Props for the SubtitleEditor component.
+ * 
+ * @prop subtitleContent - The content of the subtitle.
+ * @prop subtitleUrl - The URL of the subtitle.
+ * @prop setSubtitleContent - Function to set the subtitle content.
+ * @prop setSubtitleUrl - Function to set the subtitle URL.
+ * @prop setSubtitles - Function to set the subtitles.
+ * 
+ */
 interface SubtitleEditorProps {
     subtitleContent: string;
     subtitleUrl?: string;
@@ -11,9 +21,23 @@ interface SubtitleEditorProps {
     setSubtitles?: (subtitles: any) => void;
 }
 
+/**
+ * Component for editing subtitles.
+ * 
+ * @param subtitleContent - The content of the subtitle.
+ * @param setSubtitleContent - Function to set the subtitle content.
+ * @param setSubtitleUrl - Function to set the subtitle URL.
+ * @param setSubtitles - Function to set the subtitles.
+ * @returns The SubtitleEditor component.
+ */
+
 const SubtitleEditor: React.FC<SubtitleEditorProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles }) => {
 
-    // 上传字幕文件
+    /**
+     * Handles the upload functionality by reading the uploaded subtitle file and converting it to VTT format.
+     * 
+     * @param event - The upload event.
+     */
     const uploadSubtitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
@@ -49,6 +73,13 @@ const SubtitleEditor: React.FC<SubtitleEditorProps> = ({ subtitleContent, setSub
 
 
 
+
+    /**
+     * Creates a URL for the given subtitle content.
+     * 
+     * @param subtitleContent - The content of the subtitle in VTT format.
+     * @returns The URL of the created Blob object representing the subtitle.
+     */
     function createSubtitleUrl(subtitleContent: string) {
         // 创建vtt字幕的Blob对象 方便track分析 参数为vtt格式的字符串 返回该对象的url
         const subUrl = vttToUrl(subtitleContent);
@@ -56,6 +87,10 @@ const SubtitleEditor: React.FC<SubtitleEditorProps> = ({ subtitleContent, setSub
         return subUrl;
     }
 
+
+    /**
+     * Handles the save functionality by creating a download link for the edited subtitle file.
+     */
     const handleSave = () => {
         const element = document.createElement("a");
         const file = new Blob([subtitleContent], { type: 'text/plain' });
