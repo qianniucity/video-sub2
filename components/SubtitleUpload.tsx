@@ -1,5 +1,5 @@
 import React from 'react';
-import { getExt } from '../utils/common';
+import { getExt, convertToSrtFormat } from '../utils/common';
 import { srtToVtt, urlToArr, vttToUrl } from '../utils/subtitletrans';
 import assToVtt from '../utils/assToVtt';
 import Subtitle from '@/type/subtitle';
@@ -9,9 +9,10 @@ interface SubtitleUploadProps {
     setSubtitleContent: (content: string) => void;
     setSubtitleUrl: (url: string) => void;
     setSubtitles: (subtitles: Subtitle[]) => void;
+    subtitles: Subtitle[];
 }
 
-const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles }) => {
+const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles, subtitles }) => {
 
     // 上传字幕文件
     const uploadSubtitle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,6 +30,8 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
                 text = text.replace(/{[\s\S]*?}/g, '');
             }
             if (!text) return;
+
+            // console.log("file", text)
 
             setSubtitleContent(text as string);
             const subUrl = createSubtitleUrl(text as string);
@@ -48,16 +51,18 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
 
 
 
-    function createSubtitleUrl(subtitleContent: string) {
+    const createSubtitleUrl = (subtitleContent: string) => {
         // 创建vtt字幕的Blob对象 方便track分析 参数为vtt格式的字符串 返回该对象的url
         const subUrl = vttToUrl(subtitleContent);
         setSubtitleUrl(subUrl);
         return subUrl;
     }
 
+
+
     const handleSave = () => {
         const element = document.createElement("a");
-        const file = new Blob([subtitleContent], { type: 'text/plain' });
+        const file = new Blob([subtitles ? convertToSrtFormat(subtitles) : subtitleContent], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
         element.download = "editedSubtitle.srt";
         document.body.appendChild(element); // Required for this to work in FireFox

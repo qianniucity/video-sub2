@@ -28,6 +28,33 @@ export async function urlToArr(url: string): Promise<Subtitle[]> {
         $track.src = url;
     });
 }
+
+export async function urlToSubTitleTimeLine(url: string): Promise<Subtitle[]> {
+    if (typeof window === 'undefined') {
+        throw new Error('urlToArr can only be used in the browser');
+    }
+    return new Promise((resolve, reject) => {
+        const $video = document.createElement('video');
+        const $track = document.createElement('track');
+        $track.default = true;
+        $track.kind = 'metadata';
+        $video.appendChild($track);
+        $track.onerror = error => {
+            reject(error);
+        };
+        $track.onload = () => {
+            resolve(
+                Array.from($track.track.cues as TextTrackCueList).map(item => {
+                    const start = secondToTime(item.startTime);
+                    const end = secondToTime(item.endTime);
+                    const text = (item as TextTrackCue & { text: string }).text;
+                    return new Subtitle({ start, end, text });
+                }),
+            );
+        };
+        $track.src = url;
+    });
+}
 //创建vtt字幕的Blob对象 方便track分析 参数为vtt格式的字符串 返回该对象的url
 export function vttToUrl(vttText: string): string {
     return URL.createObjectURL(

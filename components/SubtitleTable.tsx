@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Column, Table, AutoSizer } from 'react-virtualized';
 import 'react-virtualized/styles.css'; // 导入样式
 import { cn } from "@/lib/utils";
@@ -9,11 +9,9 @@ import { escapeHTML, subtitlesToUrl, unescapeHTML, vttToUrl } from '@/utils/subt
 import Storage from '@/utils/storage';
 import WaveSurfer from 'wavesurfer.js';
 import {
-    BanknotesIcon,
     ClockIcon,
     UserGroupIcon,
     InboxIcon,
-    CreditCardIcon,
 } from '@heroicons/react/24/outline';
 
 // TODO Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Grid which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here:
@@ -30,44 +28,49 @@ interface SubtitleTableProps {
     setSubtitles?: (subtitles: Subtitle[]) => void;
     setSubtitleUrl?: (url: string) => void;
     wavesurferState?: WaveSurfer;
+    subtitle: Subtitle;
+    setSubtitle: (subtitle: Subtitle) => void;
+    currentTimeLineContent: Subtitle;
+    scrollIndex: number;
 }
 
-const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, wavesurferState }) => {
+const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, wavesurferState, subtitle, setSubtitle, currentTimeLineContent, scrollIndex }) => {
 
-    const [subtitle, setSubtitle] = useState<Subtitle>(new Subtitle({ start: '', end: '', text: '' }));
+
     const [index, setIndex] = useState(-1);
     const { toast } = useToast()
     const storage = new Storage();
-    const [history, setHistory] = useState<any[]>([]);
+    const [history, setHistory] = useState<Subtitle[][]>([]);
 
-    function onEdit(sub: Subtitle) {
+
+    const onEdit = (sub: Subtitle) => {
         const index = subtitles.indexOf(sub);
         setSubtitle(sub);
         setIndex(index);
         editSubtitle(sub);
     }
 
-    function onUpdate(sub: Subtitle) {
+    const onUpdate = () => {
         if (check()) {
-            updateSubtitle(index, new Subtitle({ start: sub.start, end: sub.end, text: sub.text }));
+            updateSubtitle(index, new Subtitle({ start: subtitle.start, end: subtitle.end, text: subtitle.text }));
             setSubtitle(new Subtitle({ start: '', end: '', text: '' }));
             setIndex(-1);
         }
     }
 
-    function onChange(name: string, value: string) {
+    const onChange = (name: string, value: string) => {
         const updatedSubtitle = new Subtitle({ ...subtitle, [name as keyof Subtitle]: value });
         setSubtitle(updatedSubtitle);
     }
 
-    function onRemove(sub: Subtitle) {
+    const onRemove = (sub: Subtitle) => {
         removeSubtitle(sub);
         setSubtitle(new Subtitle({ start: '', end: '', text: '' }));
         setIndex(-1);
     }
 
     // 删除单个字幕
-    function removeSubtitle(sub: Subtitle) {
+    const removeSubtitle = (sub: Subtitle) => {
         if (!checkSub(sub)) return;
         const index = subtitles.indexOf(sub);
         subtitles.splice(index, 1);
@@ -80,9 +83,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
     }
 
 
-    function check() {
-        // const { index, subtitle } = state;
-        // const { subtitles } = props;
+    const check = () => {
         const startTime = timeToSecond(subtitle.start);
         const endTime = timeToSecond(subtitle.end);
         const previous = subtitles[index - 1];
@@ -133,27 +134,48 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
 
 
     // 验证字幕在数组范围内
-    function checkSub(sub: Subtitle) {
+    const checkSub = (sub: Subtitle) => {
         return subtitles.includes(sub);
     }
 
     // 激活单个字幕的编辑
-    function editSubtitle(sub: Subtitle) {
+    const editSubtitle = (sub: Subtitle) => {
         if (!checkSub(sub)) return;
         const subtitlesNew = subtitles.map((item: Subtitle) => {
-            item.highlight = false;
+            // item.highlight = false;
             item.editing = false;
             return item;
         });
         sub.editing = true;
-        updateSubtitles(subtitlesNew).then(() => {
-            videoSeek(sub);
+        // updateSubtitles(subtitlesNew).then(() => {
+        //     // 改成当我点击当前行的时候，调用 videoSeek(sub);
+
+        // });
+    }
+
+    const handleRowClick = (rowData: Subtitle) => {
+        console.log("rowData", rowData)
+        if (!checkSub(rowData)) return;
+        const subtitlesNew = subtitles.map((item: Subtitle) => {
+            item.highlight = false;
+            // item.editing = false;
+            return item;
         });
+        rowData.highlight = true;
+        // updateSubtitles(subtitlesNew).then(() => {
+        //     // 改成当我点击当前行的时候，调用 videoSeek(sub);
+
+        // });
+        // console.log("Row clicked:", rowData);
+        // 在这里添加你想要执行的逻辑
+        videoSeek(rowData);
     }
 
 
+
+
     // 更新所有字幕数据, 可选是否更新字幕地址和是否回退操作
-    function updateSubtitles(subtitleList: Subtitle[], updateUrl?: boolean, isUndo?: boolean) {
+    const updateSubtitles = (subtitleList: Subtitle[], updateUrl?: boolean, isUndo?: boolean) => {
         return new Promise(resolve => {
             if (setSubtitles) {
                 setSubtitles(subtitleList);
@@ -168,7 +190,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                     if (history.length >= 100) {
                         setHistory(prevHistory => prevHistory.slice(1));
                     }
-                    setHistory(prevHistory => [...prevHistory, subtitleList.map((sub: Subtitle) => ({ ...sub }))]);
+                    setHistory([subtitles.map(sub => sub.clone)]);
                 }
 
                 storage.set(
@@ -182,7 +204,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
 
 
     // 更新单个字幕
-    function updateSubtitle(index: number, sub: Subtitle) {
+    const updateSubtitle = (index: number, sub: Subtitle) => {
         const subtitlesNew = subtitles.map(item => {
             item.highlight = false;
             item.editing = false;
@@ -200,14 +222,14 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
     }
 
     // 滚动到某个字幕
-    function updateCurrentIndex(sub: Subtitle) {
+    const updateCurrentIndex = (sub: Subtitle) => {
         if (!checkSub(sub)) return;
         const index = subtitles.indexOf(sub);
         setIndex(index);
     }
 
     // 视频跳转到某个字幕的开始时间, 可选是否播放
-    function videoSeek(sub: Subtitle, isPlay: boolean = false) {
+    const videoSeek = (sub: Subtitle, isPlay: boolean = false) => {
         const currentTime = sub.startTime + 0.001;
         if (!wavesurferState) return;
         if (!wavesurferState.isPlaying() && currentTime > 0 && currentTime !== wavesurferState.getCurrentTime() && wavesurferState.getDuration()) {
@@ -231,44 +253,73 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
 
     // 验证字幕是否不规范
     const checkSubtitleIllegal = (sub: Subtitle): boolean => {
+        // console.log("sub-checkSubtitleIllegal", sub);
         const index: number = subtitles.indexOf(sub);
         const previous: Subtitle | undefined = subtitles[index - 1];
         return (previous && sub.startTime < previous.endTime) || !sub.check;
     }
 
+    // const activeRowIndex = () => {
+    //     console.log("currentTimeLineContent", currentTimeLineContent)
+
+    //     if (!checkSub(currentTimeLineContent)) return;
+    //     console.log("indexindexindexindexindexindexindexindexindexindex")
+    //     const index = subtitles.indexOf(currentTimeLineContent);
+    //     console.log("index",index)
+    //     setScrollIndex(index)
+    // }
+
+    // const getRandomInt = (): number => {
+    //     return Math.floor(Math.random() * 60);
+    // };
+
+    useEffect(() => {
+        console.log("scrollIndex-Table", scrollIndex);
+        // 在数组 subtitles 中，当前 scrollIndex 下标，设置 highlight 为 true
+        const subtitlesNew = subtitles.map((item: Subtitle) => {
+            item.highlight = false;
+            return item;
+        });
+        if (scrollIndex !== -1) {
+            subtitlesNew[scrollIndex].highlight = true;
+        }
+        // updateSubtitles(subtitlesNew).then(() => {
+        //     // console.log("scrollIndex", scrollIndex);
+        // });
+
+    }, [scrollIndex]);
+
 
     return (
         <AutoSizer disableHeight>
             {({ width }) => (
-
-
                 <div className="flex flex-1 border-r border-gray-800">
                     <Table
                         width={width}
-                        height={300}
-                        gridClassName={"gridScrollWrap"}
+                        height={390}
                         headerHeight={20}
                         rowHeight={30}
                         rowCount={subtitles.length}
                         rowGetter={({ index }) => subtitles[index]}
+                        scrollToIndex={scrollIndex}
 
                         headerRowRenderer={() => {
                             return (
                                 <div className="flex bg-blue-500 border-b border-gray-800">
-                                    <div className="row w-12 text-center"> {/* 50px approximately equals to 12 in Tailwind's scale */}
+                                    <div className="row w-12 text-center">
                                         #
                                     </div>
-                                    <div className="row w-28 text-center"> {/* 100px approximately equals to 24 in Tailwind's scale */}
+                                    <div className="row w-28 text-center">
                                         {cn("start")}
                                     </div>
-                                    <div className="row w-28 text-center"> {/* 100px approximately equals to 24 in Tailwind's scale */}
+                                    <div className="row w-28 text-center">
                                         {cn("end")}
                                     </div>
-                                    <div className="row w-28 text-center">{cn("duration")}</div>
-                                    <div className="row w-flex-1 text-center">
+                                    <div className="row w-20 text-center">{cn("duration")}</div>
+                                    <div className="row flex-1 text-center">
                                         {cn("text")}
                                     </div>
-                                    <div className="row w-20 text-center"> {/* 90px approximately equals to 22 in Tailwind's scale */}
+                                    <div className="row w-20 text-center">
                                         {cn("operation")}
                                     </div>
                                 </div>
@@ -279,52 +330,60 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                                 <div
                                     key={props.key}
                                     className={`flex items-center ${props.index % 2 ? 'bg-gray-200' : 'bg-gray-100'} 
-                            ${props.rowData.editing ? 'bg-blue-100' : ''} 
-                            ${props.rowData.highlight ? 'bg-blue-200' : ''} 
+                            ${props.rowData.editing ? 'bg-rose-300' : ''} 
+                            ${props.rowData.highlight ? 'bg-blue-400' : ''} 
                             ${checkSubtitleIllegal(props.rowData) ? 'bg-red-200' : ''}`}
                                     style={props.style}
+                                    onClick={() => handleRowClick(props.rowData)} // 添加点击事件处理器
                                 >
-                                    <div className="w-12">
+                                    <div className="w-12 text-center">
                                         {props.index + 1}
                                     </div>
-                                    <div className="w-28 ">
-                                        <span className="edit">{props.rowData.start}</span>
-                                        {/* <input
-                                            maxLength={20}
-                                            className="input bg-transparent border border-gray-300 rounded p-1 edit"
-                                            value={subtitle.start}
-                                            onChange={e => onChange('start', e.target.value)}
-                                        /> */}
-                                    </div>
-                                    <div className="w-28 ">
-                                        <span className="edit">{props.rowData.end}</span>
-                                        {/* <input
-                                            maxLength={20}
-                                            className="input bg-transparent border border-gray-300 rounded p-1 edit"
-                                            value={subtitle.end}
-                                            onChange={e => onChange('end', e.target.value)}
-                                        /> */}
-                                    </div>
                                     <div className="w-28">
-                                        <span className="edit">{props.rowData.duration}</span>
-                                        {/* <input disabled maxLength={20} className="input bg-transparent border border-gray-300 rounded p-1 edit" value={subtitle.duration} /> */}
+                                        {/* <span className="edit">{props.rowData.start}</span> */}
+                                        <input
+                                            maxLength={20}
+                                            className=" bg-transparent border border-gray-300 rounded p-1 w-28 text-center"
+                                            defaultValue={props.rowData.start}
+                                            onChange={e => onChange('start', e.target.value)}
+                                        />
                                     </div>
-                                    <div className="flex-1  w-500">
-                                        <span className="edit ">
-                                            {props.rowData.text.split(/\r?\n/).map((item: string, index: React.Key | null | undefined) => (
+                                    <div className="w-28  text-center">
+                                        {/* <span className="">{props.rowData.end}</span> */}
+                                        <input
+                                            maxLength={20}
+                                            className=" bg-transparent border border-gray-300 rounded p-1 w-28 text-center "
+                                            defaultValue={props.rowData.end}
+                                            onChange={e => onChange('end', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="w-20 ">
+                                        {/* <span className="edit">{props.rowData.duration}</span> */}
+                                        <input
+                                            disabled
+                                            maxLength={20}
+                                            className="bg-transparent border border-gray-300 rounded p-1 w-20 text-center"
+                                            defaultValue={props.rowData.duration}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <span className={`${subtitle.editing ? 'hidden' : ''}`}>
+                                            {/* {props.rowData.text.split(/\r?\n/).map((item: string, index: React.Key | null | undefined) => (
                                                 <p key={index} className="m-0">{escapeHTML(item)}</p>
-                                            ))}
+                                            ))} */}
+                                            {props.rowData.text}
                                         </span>
-                                        {/* <textarea
+                                        <input
+                                            disabled={!props.rowData.editing}
                                             maxLength={100}
-                                            className="textarea bg-transparent border border-gray-300 rounded p-1 edit"
-                                            value={unescapeHTML(subtitle.text || '')}
+                                            className={`bg-transparent border border-gray-300 rounded p-1 w-full ${subtitle.editing ? '' : 'hidden'}`}
+                                            defaultValue={unescapeHTML(props.rowData.text || '')}
                                             onChange={e => onChange('text', e.target.value)}
-                                        /> */}
+                                        />
                                     </div>
-                                    <div className="flex w-20">
-                                        <ClockIcon className="h-5 w-5 text-gray-500" onClick={() => onEdit(props.rowData)} />
-                                        <UserGroupIcon className="h-5 w-5 text-gray-500" onClick={() => onUpdate(props.rowData)} />
+                                    <div className="flex w-20" >
+                                        <ClockIcon display={10} className="h-5 w-5 text-gray-500" onClick={() => onEdit(props.rowData)} />
+                                        <UserGroupIcon className="h-5 w-5 text-gray-500" onClick={() => onUpdate()} />
                                         <InboxIcon className="h-5 w-5 text-gray-500" onClick={() => onRemove(props.rowData)} />
                                     </div>
                                 </div>
@@ -333,9 +392,9 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
 
                     >
                         {/* <Column label="序号" dataKey="id" width={50} cellRenderer={({ rowIndex }) => rowIndex + 1} />
-                    <Column label="开始时间" dataKey="start" width={120} />
-                    <Column label="结束时间" dataKey="end" width={120} />
-                    <Column label="内容" dataKey="text" width={width - 290} /> */}
+                        <Column label="开始时间" dataKey="start" width={120} />
+                        <Column label="结束时间" dataKey="end" width={120} />
+                        <Column label="内容" dataKey="text" width={width - 290} /> */}
                     </Table>
                 </div>
             )}
@@ -344,4 +403,4 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
     );
 };
 
-export default SubtitleTable;         
+export default React.memo(SubtitleTable);

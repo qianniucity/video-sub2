@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SubtitleUpload from './SubtitleUpload';
 import VideoPlayer from './VideoPlayer';
 import WaveformViewer from './WaveformViewer';
@@ -25,7 +25,15 @@ const VideoPage: React.FC = () => {
     const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
     const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
     const [wavesurferState, setWavesurferState] = useState<WaveSurfer>();
+    const [subtitle, setSubtitle] = useState<Subtitle>(new Subtitle({ start: '', end: '', text: '' }));
+    const [currentTimeLineContent, setCurrentTimeLineContent] = useState<Subtitle>(new Subtitle({ start: '', end: '', text: '' }));
+    const [scrollIndex, setScrollIndex] = useState(-1)
 
+    useEffect(() => {
+        // console.log("init VideoPage");
+
+
+    }, []);
 
 
     return (
@@ -35,13 +43,13 @@ const VideoPage: React.FC = () => {
                     <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} subtitleUrl={subtitleUrl} />
                 </div>
                 <div className="subtitle-editor" style={{ flexBasis: '50%' }}>
-                    <SubtitleUpload subtitleContent={subtitleContent} setSubtitleContent={setSubtitleContent} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} />
+                    <SubtitleUpload subtitleContent={subtitleContent} setSubtitleContent={setSubtitleContent} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} subtitles={subtitles}/>
                     <br />
-                    <SubtitleTable subtitles={subtitles} setSubtitles={setSubtitles} setSubtitleUrl={setSubtitleUrl} wavesurferState={wavesurferState} />
+                    <SubtitleTable subtitles={subtitles} setSubtitles={setSubtitles} setSubtitleUrl={setSubtitleUrl} wavesurferState={wavesurferState} subtitle={subtitle} setSubtitle={setSubtitle} currentTimeLineContent={currentTimeLineContent} scrollIndex={scrollIndex} />
                 </div>
             </div>
             <div className="bottom-section">
-                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={subtitles} setWavesurferState={setWavesurferState} />
+                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={subtitles} wavesurferState={wavesurferState} setWavesurferState={setWavesurferState} subtitle={subtitle} setCurrentTimeLineContent={setCurrentTimeLineContent} setScrollIndex={setScrollIndex} />
             </div>
             <style jsx>{`
                 .video-page {

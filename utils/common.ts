@@ -1,4 +1,5 @@
 // 引入类型定义，以便更好地与TypeScript集成
+import Subtitle from '@/type/subtitle';
 import { DT } from './time-conversion';
 
 // 检查时间格式是否正确
@@ -61,4 +62,16 @@ export function debounce(func: (...args: any[]) => void, wait: number, context?:
         }
         timeout = setTimeout(later, wait);
     };
+}
+
+export function convertToSrtFormat(subtitles: Subtitle[]): string {
+    return subtitles
+        .map((subtitle, index) => {
+            console.log("subtitle", subtitle)
+            const start = subtitle.start;
+            const end = subtitle.end;
+
+            return `${index + 1}\n${start} --> ${end}\n${subtitle.text}\n`;
+        })
+        .join('\n');
 }

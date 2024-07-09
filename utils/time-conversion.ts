@@ -2,11 +2,6 @@ type Time = string;
 type Duration = number | string;
 
 function checkTime(time: Time): boolean {
-  console.log("timetimetimetimetime", time);
-  console.log("timetime", /^(\d+:)?([0-5][0-9]:)?([0-5][0-9])(\.\d{1,3})?$/.test(time));
-  console.log("timetime", /^(\d+:)?([0-5][0-9]:)?([0-5][0-9])(\.\d{1,3})?$/.test(time));
-  console.log("timetime", /^(\d+:)?([0-5][0-9]:)?([0-5][0-9])(\.\d{1,3})?$/.test(time));
-  console.log("timetime", /^(\d+:)?([0-5][0-9]:)?([0-5][0-9])(\.\d{1,3})?$/.test(time));
   return /^(\d+:)?([0-5][0-9]:)?([0-5][0-9])(\.\d{1,3})?$/.test(time);
 }
 
@@ -46,7 +41,6 @@ const DT = {
     }
   },
   t2d: function (time: Time): number {
-    console.log("t2d-time", time);
     if (checkTime(time)) {
       const arr = time.split(".");
       const left = arr[0].split(":") || [];

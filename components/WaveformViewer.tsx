@@ -1,26 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
+import Regions from 'wavesurfer.js';
 import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
 import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.esm.js'
 import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import Minimap from 'wavesurfer.js/dist/plugins/minimap.esm.js'
-import subtitle from '../public/video/subtitle.json';
+import subtitleJson from '../public/video/subtitle.json';
 import Subtitle from '@/type/subtitle';
+import { secondToTime, sleep, timeToSecond } from '@/utils/common';
+import { toast } from './ui/use-toast';
+import SubtitleTimeLine from '@/type/subtitleTimeLine';
 
 interface WaveformViewerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
     videoUrl: string;
     subtitles: Subtitle[];
+    wavesurferState?: WaveSurfer;
     setWavesurferState?: (wavesurfer: WaveSurfer) => void;
-
+    subtitle?: Subtitle;
+    setCurrentTimeLineContent: (currentTimeLineContent: Subtitle) => void;
+    setScrollIndex:(scrollIndex: number) => void;
 }
 
-const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles, setWavesurferState }) => {
+const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles, wavesurferState, setWavesurferState, subtitle, setCurrentTimeLineContent ,setScrollIndex}) => {
     const waveSurferRef = useRef<WaveSurfer>(); // 用于引用WaveSurfer实例
     const waveContainerRef = useRef<HTMLDivElement>(null);
     const sliderRef = useRef<HTMLInputElement>(null);
     const [loop, setLoop] = useState(false); // 使用 useState 管理 'loop' 状态
+    const [processedSubtitlesTimeLine, setProcessedSubtitlesTimeLine] = useState<SubtitleTimeLine[]>([]);
+
+    const random = (min: number, max: number) => Math.random() * (max - min) + min
+    const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
+
+
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const initializeWaveSurfer = () => {
@@ -79,10 +92,8 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
             media: videoRef.current,
             url: videoUrl,
             plugins: [topTimeline, bottomTimeline, hoverLine, minimap],
-            minPxPerSec: 50,
+            minPxPerSec: 200,
         });
-
-
         return ws;
     };
 
@@ -124,19 +135,22 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
         })
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const createRegions = (ws: WaveSurfer) => {
         const wsRegions = ws.registerPlugin(RegionsPlugin.create());
+        console.log("wsRegions", wsRegions)
+        console.log("processedSubtitlesTimeLine", processedSubtitlesTimeLine)
 
         // 添加字幕区域
         ws.on('decode', () => {
-            subtitle.forEach((subtitle) => {
+            processedSubtitlesTimeLine.forEach((subtitle, index) => {
                 wsRegions.addRegion({
+                    id:index.toString() ,
                     start: subtitle.start,
                     end: subtitle.end,
                     content: subtitle.text,
+                    color: randomColor(),
                     resize: true,
-                    channelIdx: 1,
+                    // channelIdx: 1,
                     // contentEditable: true,
                 });
             });
@@ -150,52 +164,79 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
         wsRegions.on('region-updated', (region) => {
             console.log('Updated region', region);
         });
+
+        wsRegions.on('region-in', (region) => {
+            console.log("region-in-id",region.id)
+            setScrollIndex(Number(region.id))
+            // if (!region.content) return;
+            // console.log('region-in-content', region.content.textContent)
+            // const startTime = secondToTime(region.start);
+            // const endTime = secondToTime(region.end);
+            // setCurrentTimeLineContent(new Subtitle({ start: startTime, end: endTime, text: region.content.textContent ?? '' }))
+        })
+        wsRegions.on('region-out', (region) => {
+            // console.log('region-out', region)
+        })
+        wsRegions.on('region-clicked', (region, e) => {
+            e.stopPropagation() // prevent triggering a click on the waveform
+            // region.play()
+            console.log("region-clicked-id",region.id)
+            region.setOptions({ start: region.start, color: randomColor() })
+            setScrollIndex(Number(region.id))
+            // region.play()
+            ws.setTime(region.start)
+            // if (!region.content) return;
+            // console.log('region-clicked-content', region.content.textContent)
+            // console.log('region-clicked-id', region.id)
+            // const startTime = secondToTime(region.start);
+            // const endTime = secondToTime(region.end);
+            // setCurrentTimeLineContent(new Subtitle({ start: startTime, end: endTime, text: region.content.textContent ?? '' }))
+        })
     };
 
 
-    // const clickWaveform = (ws: WaveSurfer) => {
-    //     const wsRegions = ws.registerPlugin(RegionsPlugin.create());
-    //     let activeRegion = null; // 显式指定类型
-    //     wsRegions.on('region-in', (region) => {
-    //         console.log('region-in', region)
-    //         activeRegion = region
-    //     })
-    //     wsRegions.on('region-out', (region) => {
-    //         console.log('region-out', region)
-    //         if (activeRegion === region) {
-    //             if (loop) {
-    //                 region.play()
-    //             } else {
-    //                 activeRegion = null
-    //             }
-    //         }
-    //     })
-    //     wsRegions.on('region-clicked', (region, e) => {
-    //         e.stopPropagation() // prevent triggering a click on the waveform
-    //         activeRegion = region
-    //         region.play()
-    //         region.setOptions({
-    //             color: 'rgba(255, 0, 0, 0.5)',
-    //             start: 0
-    //         })
-    //     })
-    //     // Reset the active region when the user clicks anywhere in the waveform
-    //     ws.on('interaction', () => {
-    //         activeRegion = null
-    //     })
-    // };
+    useEffect(() => {
+        console.log("subtitlessubtitlessubtitlessubtitlessubtitlessubtitlessubtitlessubtitles", subtitles)
+        const subtitlesTimeLine = subtitles.map((subtitle) => {
+            const start = timeToSecond(subtitle.start);
+            const end = timeToSecond(subtitle.end);
+            return new SubtitleTimeLine({ start: start, end: end, text: subtitle.text });
+        });
+        console.log("newSubtitlesnewSubtitlesnewSubtitlesnewSubtitlesnewSubtitlesnewSubtitles", subtitlesTimeLine)
+        setProcessedSubtitlesTimeLine(subtitlesTimeLine);
+
+
+
+    }, [subtitles]);
 
 
     useEffect(() => {
+        console.log("init ws");
+        waveSurferRef.current?.destroy();
+
         const ws = initializeWaveSurfer();
-        // if (ws && setWavesurferState) {
-        //     setWavesurferState(ws);
-        // }
+        if (ws && setWavesurferState) {
+            setWavesurferState(ws);
+        }
         if (ws) createRegions(ws);
         if (ws) createZoom(ws);
+        // if (ws) clickWaveform(ws);
 
-        return () => waveSurferRef.current?.destroy();
-    }, [createRegions, initializeWaveSurfer, setWavesurferState, videoUrl]);
+
+        // if (ws && subtitle && subtitle.text) {
+        //     videoSeek(ws, subtitle, false);
+        // }
+
+    }, [processedSubtitlesTimeLine]);
+
+    // useEffect(() => {
+    //     const ws = initializeWaveSurfer();
+    //     if (ws && subtitle) {
+    //         // videoSeek(ws, subtitle, false);
+    //     }
+
+    //     return () => waveSurferRef.current?.destroy();
+    // }, [initializeWaveSurfer, subtitle]);
 
     // const handleLoop = (e: React.ChangeEvent<HTMLInputElement>) => {
     //     setLoop(e.target.checked); // 更新 'loop' 状态
@@ -221,7 +262,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
                 </div> */}
                 <div className="ms-2 text-sm">
                     <label>
-                        音波缩放: <input ref={sliderRef} type="range" min="10" max="200" defaultValue="50" />
+                        音波缩放: <input ref={sliderRef} type="range" min="10" max="300" defaultValue="200" />
                     </label>
                 </div>
             </div>
@@ -229,4 +270,4 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
     );
 }
 
-export default WaveformViewer;
+export default React.memo(WaveformViewer);

@@ -1,20 +1,20 @@
-import React, { useRef } from 'react';
-import VideoPlayer from './VideoPlayer';
-import WaveformViewer from './WaveformViewer';
+// import React, { useRef } from 'react';
+// import VideoPlayer from './VideoPlayer';
+// import WaveformViewer from './WaveformViewer';
 
-interface PlayerProps {
-  videoUrl: string;
-}
+// interface PlayerProps {
+//   videoUrl: string;
+// }
 
-const TimelineView: React.FC<PlayerProps> = ({ videoUrl }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+// const TimelineView: React.FC<PlayerProps> = ({ videoUrl }) => {
+//   const videoRef = useRef<HTMLVideoElement>(null);
 
-  return (
-    <>
-      <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} />
-      <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={[]} />
-    </>
-  );
-}
+//   return (
+//     <>
+//       <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} />
+//       <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={[]} />
+//     </>
+//   );
+// }
 
-export default TimelineView;
+// export default TimelineView;

@@ -4,6 +4,8 @@ type SubtitleProps = {
     start: string;
     end: string;
     text: string;
+    editing?: boolean;
+    highlight?: boolean;
 };
 
 export default class Subtitle {
@@ -13,12 +15,12 @@ export default class Subtitle {
     editing?: boolean; // 是否正在编辑
     highlight?: boolean; // 是否高亮
 
-    constructor({ start, end, text }: SubtitleProps) {
+    constructor({ start, end, text, editing = false, highlight = false }: SubtitleProps) {
         this.start = start;
         this.end = end;
         this.text = text;
-        this.editing = false;
-        this.highlight = false;
+        this.editing = editing;
+        this.highlight = highlight;
     }
 
     get check(): boolean {
@@ -46,16 +48,6 @@ export default class Subtitle {
     }
 
     get duration(): string {
-        console.log("this.start", this.start)
-        console.log("this.end", this.end)
-
-        // if (!this.start || !this.end) {
-        //     return '00:00:00.000';
-        // }
-        console.log("this.text", this.text)
-        console.log("this.endTime", this.endTime);
-        console.log("this.startTime", this.startTime);
-        console.log('duration', (this.endTime - this.startTime).toFixed(3));
         return (this.endTime - this.startTime).toFixed(3);
     }
 }
