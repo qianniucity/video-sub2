@@ -64,6 +64,8 @@ export function vttToUrl(vttText: string): string {
     );
 }
 
+
+
 export function vttToUrlWorker(): string {
     return URL.createObjectURL(
         new Blob([
@@ -88,7 +90,7 @@ export function vttToUrlWorker(): string {
 
 export function subtitlesToUrl(subtitles: Subtitle[]): string {
     // 转换为vtt格式
-    const vttContent = `WEBVTT\n\n${subtitles.map((item, index) => 
+    const vttContent = `WEBVTT\n\n${subtitles.map((item, index) =>
         `${index + 1}\n${item.start} --> ${item.end}\n${item.text}`).join('\n\n')}`;
 
     return URL.createObjectURL(
@@ -207,3 +209,16 @@ export function getSearchParams(name: string): string {
     const locationUrl = new URL(window.location.href);
     return decodeURIComponent(locationUrl.searchParams.get(name) || '');
 }
+
+// 处理字幕文件类型
+export function processSubtitleFileType(text: string, type: string): string {
+    if (type === 'srt') {
+        text = srtToVtt(text);
+    } else if (type === 'ass') {
+        text = assToVtt(text);
+    } else {
+        // 对于非 srt 和 ass 类型的字幕，移除所有花括号内的内容
+        text = text.replace(/{[\s\S]*?}/g, '');
+    }
+    return text;
+};

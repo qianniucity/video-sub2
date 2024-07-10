@@ -10,16 +10,14 @@ interface SubtitleUploadProps {
     setSubtitleUrl: (url: string) => void;
     setSubtitles: (subtitles: Subtitle[]) => void;
     subtitles: Subtitle[];
-    setVideoUrl: (url: string) => void;
 }
 
-const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles, subtitles, setVideoUrl }) => {
+const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles, subtitles }) => {
 
     // 上传字幕文件
     const uploadSubtitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
-        
         const reader = new FileReader();
         const type = getExt(file.name);
         reader.onload = () => {
@@ -64,25 +62,6 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
         setSubtitleUrl(subUrl);
         return subUrl;
     }
-    /**
-     * 上传视频文件，读取视频文件并获取视频URL
-     * @param event 
-     * @returns 
-     */
-    const uploadVideo = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            const videoUrl = reader.result as string;
-            console.log("videoUrl", videoUrl)
-            setVideoUrl(videoUrl);
-        };
-        reader.onerror = error => {
-            console.error("function uploadVideo", error)
-        }
-        reader.readAsDataURL(file);
-    };
 
     /**
      * Handles the save functionality by converting the subtitles to SRT format and downloading the file.
@@ -97,15 +76,23 @@ const SubtitleUpload: React.FC<SubtitleUploadProps> = ({ subtitleContent, setSub
         element.click();
     };
 
+    // 上传视频文件，并返回视频地址
+    const uploadVideo = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const videoUrl = reader.result as string;
+            console.log("videoUrl", videoUrl)
+        };
+        reader.onerror = error => {
+            console.error("function uploadVideo", error)
+        }
+        reader.readAsDataURL(file);
+    };
+
     return (
         <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload 字幕</label>
-            <input
-                accept='.vtt,.srt,.ass'
-                type="file"
-                onChange={uploadSubtitle}
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" />
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">VTT, SRT, ASS</p>
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload Video</label>
             <input
                 accept='.mp4,.wav,.webm,.mov,.avi,.wmv,.flv,.mkv'

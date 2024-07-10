@@ -28,6 +28,22 @@ export function getExt(url: string): string {
         .split('.')
         .pop()!;
 }
+// 从文件名称中获取文件扩展名前的名称
+export function getName(url: string): string {
+    if (url.includes('?')) {
+        return getName(url.split('?')[0]);
+    }
+
+    if (url.includes('#')) {
+        return getName(url.split('#')[0]);
+    }
+
+    return url
+        .trim()
+        .toLowerCase()
+        .split('.')
+        .shift()!;
+}
 
 // 异步等待一段时间
 export function sleep(ms: number = 0): Promise<void> {
@@ -85,3 +101,34 @@ export function random(min: number, max: number): number {
 export function randomColor(): string {
     return `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`;
 }
+
+/**
+ * 处理视频文件并获取其URL
+ * @param file 文件对象
+ * @param type 返回文件类型 url | text, 默认为 text
+ * @returns Promise<string> 返回一个Promise，解析为视频文件的URL
+ */
+export function processMediaFileAndGetUrl(file: File, type: string = 'text'): Promise<string> {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            reject("No file provided");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            // 当文件读取成功，将结果转换为string并解析Promise
+            resolve(reader.result as string);
+        };
+        reader.onerror = error => {
+            // 如果读取过程中发生错误，拒绝Promise
+            reject(error);
+        };
+        if (type === 'url') {
+            // 以DataURL的形式读取文件内容
+            reader.readAsDataURL(file);
+        } else {
+            // 以文本形式读取文件内容
+            reader.readAsText(file);
+        }
+    });
+};

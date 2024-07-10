@@ -1,12 +1,12 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import SubtitleUpload from './SubtitleUpload';
 import VideoPlayer from './VideoPlayer';
 import WaveformViewer from './WaveformViewer';
 import SubtitleTable from './SubtitleTable';
 import Subtitle from '@/type/subtitle';
 import WaveSurfer from 'wavesurfer.js';
+import FileUpload from './media/fileUpload';
 
 const defaultVideoUrl = '/video/video.mp4';
 const defaultSubtitleUrl = '/video/ap.vtt';
@@ -33,7 +33,7 @@ const VideoPage: React.FC = () => {
                     <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} subtitleUrl={subtitleUrl} />
                 </div>
                 <div className="subtitle-editor" style={{ flexBasis: '50%' }}>
-                    <SubtitleUpload subtitleContent={subtitleContent} setSubtitleContent={setSubtitleContent} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} subtitles={subtitles} />
+                    <FileUpload subtitleContent={subtitleContent} setSubtitleContent={setSubtitleContent} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} subtitles={subtitles} setVideoUrl={setVideoUrl} />
                     <br />
                     <SubtitleTable subtitles={subtitles} setSubtitles={setSubtitles} setSubtitleUrl={setSubtitleUrl} wavesurferState={wavesurferState} subtitle={subtitle} setSubtitle={setSubtitle} scrollIndex={scrollIndex} />
                 </div>

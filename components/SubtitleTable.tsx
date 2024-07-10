@@ -55,10 +55,10 @@ interface SubtitleTableProps {
 const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, wavesurferState, subtitle, setSubtitle, scrollIndex }) => {
 
 
-    const [index, setIndex] = useState(-1);// 使用 useState 管理 'index' 状态
-    const { toast } = useToast();// 使用 useToast 自定义 hook
+    const [index, setIndex] = useState(-1);// 当前编辑的字幕下标
+    const { toast } = useToast();// 业务信息提示
     const storage = new Storage();// 创建 Storage 实例
-    const [history, setHistory] = useState<Subtitle[][]>([]);// 使用 useState 管理 'history' 状态
+    const [history, setHistory] = useState<Subtitle[][]>([]);// 字幕历史记录
 
 
     /**
