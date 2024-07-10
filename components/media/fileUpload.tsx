@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getExt, convertToSrtFormat, getName, processMediaFileAndGetUrl } from '@/utils/common';
 import { processSubtitleFileType, srtToVtt, urlToArr, vttToUrl } from '@/utils/subtitletrans';
 import Subtitle from '@/type/subtitle';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '@/components/ui/use-toast';
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 interface FileUploadProps {
-    subtitleContent: string;
-    setSubtitleContent: (content: string) => void;
     setSubtitleUrl: (url: string) => void;
     setSubtitles: (subtitles: Subtitle[]) => void;
     subtitles: Subtitle[];
@@ -15,7 +15,7 @@ interface FileUploadProps {
 
 /**
  * 文件上传组件
- * @param subtitleContent       字幕原始内容
+ * @param subtitleContent       
  * @param setSubtitleContent    设置字幕内容
  * @param setSubtitleUrl        设置字幕URL
  * @param setSubtitles          设置字幕数组
@@ -23,8 +23,10 @@ interface FileUploadProps {
  * @param setVideoUrl           设置视频URL
  * @returns 
  */
-const FileUpload: React.FC<FileUploadProps> = ({ subtitleContent, setSubtitleContent, setSubtitleUrl, setSubtitles, subtitles, setVideoUrl }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, subtitles, setVideoUrl }) => {
+    const [subtitleContent, setSubtitleContent] = useState('');// 使用 useState 管理字幕原始内容 状态
     const [originalFileName, setOriginalFileName] = React.useState<string>('defaultName');// 字幕文件名
+
     const { toast } = useToast();// 业务信息提示
 
     /**
@@ -120,23 +122,35 @@ const FileUpload: React.FC<FileUploadProps> = ({ subtitleContent, setSubtitleCon
     };
 
     return (
-        <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload 视频</label>
-            <input
-                accept='.mp4,.webm,.mov,.avi,.wmv,.flv,.mkv'
-                type="file"
-                onChange={uploadVideo}
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" />
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">MP4,WAV,WEBM,MOV,AVI,WMV,FLV,MKV</p>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload 字幕</label>
-            <input
-                accept='.vtt,.srt,.ass'
-                type="file"
-                onChange={uploadSubtitle}
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" />
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">VTT, SRT, ASS</p>
-            <button onClick={handleSave} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">保存字幕</button>
+        <div className='flex flex-wrap justify-start items-end mt-2'>
+            <div className="grid w-full max-w-sm items-end gap-1.5 mr-3">
+                <Label htmlFor="video_input">Upload 视频</Label>
+                <Input
+                    id="video_input"
+                    accept='.mp4,.webm,.mov,.avi,.wmv,.flv,.mkv'
+                    type="file"
+                    onChange={uploadVideo}
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                    aria-describedby="file_input_help" />
+            </div>
+            <div className="grid w-full max-w-sm items-end gap-1.5 mr-3">
+                <Label htmlFor="subtitle_input">Upload 字幕</Label>
+                <Input
+                    id="subtitle_input"
+                    accept='.vtt,.srt,.ass'
+                    type="file"
+                    onChange={uploadSubtitle}
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                    aria-describedby="file_input_help" />
+            </div>
 
+
+            <div className="grid  max-w-sm items-end gap-1.5">
+                <button
+                    onClick={handleSave}
+                    type="button"
+                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">保存字幕</button>
+            </div>
         </div>
     );
 };

@@ -1,11 +1,10 @@
 "use client"
 
-import React, { Suspense, useEffect, useState } from 'react';
-import VideoPage from '@/components/VideoPage';
-
+import VideoPage from '@/components/videoPage';
+import React from 'react';
 
 export default function Home() {
-  
+
   return (
     <main>
       <VideoPage />

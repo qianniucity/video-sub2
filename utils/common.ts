@@ -79,7 +79,11 @@ export function debounce(func: (...args: any[]) => void, wait: number, context?:
         timeout = setTimeout(later, wait);
     };
 }
-
+/**
+ * 将字幕数组转换为SRT格式
+ * @param subtitles 
+ * @returns 
+ */
 export function convertToSrtFormat(subtitles: Subtitle[]): string {
     return subtitles
         .map((subtitle, index) => {

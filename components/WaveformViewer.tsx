@@ -17,8 +17,7 @@ interface WaveformViewerProps {
 }
 
 /**
- * WaveformViewer component displays a waveform visualization of a video's audio.
- * It allows zooming, adding regions, and handling subtitles.
+ * 波形图组件，用于展示视频波形图，添加字幕区域，缩放功能，以及相关状态管理
  *
  * @component
  * @param {Object} props - The component props.
@@ -31,14 +30,17 @@ interface WaveformViewerProps {
  */
 
 const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles, setWavesurferState, setScrollIndex }) => {
-    const waveSurferRef = useRef<WaveSurfer>(); // 用于引用WaveSurfer实例
-    const waveContainerRef = useRef<HTMLDivElement>(null);// 用于引用waveContainer元素
-    const sliderRef = useRef<HTMLInputElement>(null);// 用于引用slider元素
-    const [loop, setLoop] = useState(false); // 使用 useState 管理 'loop' 状态
-    const [processedSubtitlesTimeLine, setProcessedSubtitlesTimeLine] = useState<SubtitleTimeLine[]>([]);// 使用 useState 管理 'processedSubtitlesTimeLine' 状态
+    const waveSurferRef = useRef<WaveSurfer>(); // 波形图引用
+    const waveContainerRef = useRef<HTMLDivElement>(null);// 波形图容器引用
+    const sliderRef = useRef<HTMLInputElement>(null);// 缩放滑块引用
+    const [processedSubtitlesTimeLine, setProcessedSubtitlesTimeLine] = useState<SubtitleTimeLine[]>([]);// 当前字幕时间线
 
 
 
+    /**
+     * 初始化波形图，添加插件，设置参数，返回波形图实例
+     * @returns  {WaveSurfer} ws - 波形图实例
+     */
     const initializeWaveSurfer = () => {
         if (!videoRef.current || !waveContainerRef.current) return;
 
@@ -100,6 +102,10 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
         return ws;
     };
 
+    /**
+     * 创建缩放功能，根据滑块的值更新缩放级别
+     * @param ws - 波形图实例
+     */
     const createZoom = (ws: WaveSurfer) => {
         // Update the zoom level on slider change
         ws.once('decode', () => {
@@ -123,6 +129,11 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
         });
     };
 
+    /**
+     * 字幕填充到波形图
+     * 创建区域，根据字幕时间线创建区域，并添加到波形图
+     * @param ws - 波形图实例
+     */
     const createRegions = (ws: WaveSurfer) => {
         const wsRegions = ws.registerPlugin(RegionsPlugin.create());
 
@@ -136,7 +147,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
                     content: subtitle.text,
                     color: randomColor(),
                     resize: true,
-                    // contentEditable: true,
+                    // contentEditable: true, // 可编辑
                 });
             });
         });
@@ -146,6 +157,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
         //   color: 'rgba(255, 0, 0, 0.1)',
         // });
 
+        // 添加区域事件监听
         wsRegions.on('region-updated', (region) => {
             console.log('Updated region', region);
         });
@@ -170,6 +182,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
     };
 
 
+    // 监听字幕变化，更新字幕时间线
     useEffect(() => {
         const subtitlesTimeLine = subtitles.map((subtitle) => {
             const start = timeToSecond(subtitle.start);
@@ -179,7 +192,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
         setProcessedSubtitlesTimeLine(subtitlesTimeLine);
     }, [subtitles]);
 
-
+    // 初始化波形图
     useEffect(() => {
         console.log("init ws");
         waveSurferRef.current?.destroy();
@@ -198,19 +211,6 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
         <>
             <div ref={waveContainerRef} style={{ width: '100%', margin: '20px auto' }} />
             <div className="flex">
-                {/* <div className="flex items-center h-5">
-                    <input
-                        id="helper-checkbox"
-                        aria-describedby="helper-checkbox-text"
-                        type="checkbox"
-                        defaultValue=""
-                        onChange={handleLoop}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                </div>
-                <div className="ms-2 text-sm">
-                    <label htmlFor="helper-checkbox" className="font-medium text-gray-900 dark:text-gray-300">当前字幕循环</label>
-                    <p id="helper-checkbox-text" className="text-xs font-normal text-gray-500 dark:text-gray-300">勾选后，当前字幕会持续循环播放</p>
-                </div> */}
                 <div className="ms-2 text-sm">
                     <label>
                         音波缩放: <input ref={sliderRef} type="range" min="10" max="300" defaultValue="200" />

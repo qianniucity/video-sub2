@@ -13,7 +13,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef, videoUrl, subtitleU
             src={videoUrl}
             controls
             playsInline
-            style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', display: 'block' }}
+            style={{
+                width: '100%',
+                maxWidth: '1200px',
+                margin: '0 auto',
+                display: 'block',
+            }}
         >
             <track
                 src={subtitleUrl}

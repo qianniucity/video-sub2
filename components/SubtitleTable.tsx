@@ -357,7 +357,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                 <div className="flex flex-1 border-r border-gray-800">
                     <Table
                         width={width}
-                        height={390}
+                        height={540}
                         headerHeight={20}
                         rowHeight={30}
                         rowCount={subtitles.length}

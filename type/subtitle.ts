@@ -8,6 +8,9 @@ type SubtitleProps = {
     highlight?: boolean;
 };
 
+/**
+ * Table 列表字幕类，包含开始时间、结束时间、文本内容、是否正在编辑、是否高亮等属性
+ */
 export default class Subtitle {
     start: string;
     end: string;
