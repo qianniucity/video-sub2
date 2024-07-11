@@ -37,7 +37,7 @@ import {
  */
 interface SubtitleTableProps {
     subtitles: Subtitle[];
-    setSubtitles?: (subtitles: Subtitle[]) => void;
+    setSubtitles: (subtitles: Subtitle[]) => void;
     setSubtitleUrl?: (url: string) => void;
     wavesurferState?: WaveSurfer;
     subtitle: Subtitle;
@@ -55,54 +55,30 @@ interface SubtitleTableProps {
 const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, wavesurferState, subtitle, setSubtitle, scrollIndex }) => {
 
 
-    const [index, setIndex] = useState(-1);// 当前编辑的字幕下标
     const { toast } = useToast();// 业务信息提示
     const storage = new Storage();// 创建 Storage 实例
     const [history, setHistory] = useState<Subtitle[][]>([]);// 字幕历史记录
 
 
     /**
-     * 编辑字幕
-     * @param sub   字幕对象
-     * 
-     */
-    const onEdit = (sub: Subtitle) => {
-        const index = subtitles.indexOf(sub);
-        setSubtitle(sub);
-        setIndex(index);
-        editSubtitle(sub);
-    }
-
-    /**
-     * 更新字幕
-     * 
-     */
-    const onUpdate = () => {
-        if (check()) {
-            updateSubtitle(index, new Subtitle({ start: subtitle.start, end: subtitle.end, text: subtitle.text }));
-            setSubtitle(new Subtitle({ start: '', end: '', text: '' }));
-            setIndex(-1);
-        }
-    }
-
-    /**
      * 修改字幕内容
      * @param name  
      * @param value 
      */
-    const onChange = (name: string, value: string) => {
-        const updatedSubtitle = new Subtitle({ ...subtitle, [name as keyof Subtitle]: value });
+    const onChange = (name: string, value: string, sub: Subtitle) => {
+        const updatedSubtitle = new Subtitle({ ...sub, [name as keyof Subtitle]: value });
         setSubtitle(updatedSubtitle);
+        console.log("updatedSubtitle", updatedSubtitle);
+        updateSubtitle(scrollIndex, updatedSubtitle);
     }
 
     /**
      * 删除字幕
      * @param sub  字幕对象
      */
-    const onRemove = (sub: Subtitle) => {
-        removeSubtitle(sub);
+    const onRemove = (index: number) => {
+        removeSubtitle(index);
         setSubtitle(new Subtitle({ start: '', end: '', text: '' }));
-        setIndex(-1);
     }
 
     /**
@@ -110,11 +86,11 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
      * @param sub 
      * @returns 
      */
-    const removeSubtitle = (sub: Subtitle) => {
-        if (!checkSub(sub)) return;
-        const index = subtitles.indexOf(sub);
-        subtitles.splice(index, 1);
-        updateSubtitles(subtitles, true).then(() => {
+    const removeSubtitle = (index: number) => {
+        // 数组是引用类型，所以需要复制一份才会更新 subtitles 状态
+        const newSubtitles = [...subtitles];
+        newSubtitles.splice(index, 1);
+        updateSubtitles(newSubtitles, true).then(() => {
             toast({
                 title: "success",
                 description: "delete subtitle",
@@ -122,80 +98,11 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
         });
     }
 
-
-    /**
-     * 检查字幕时间是否合法
-     * @returns 
-     */
-    const check = () => {
-        const startTime = timeToSecond(subtitle.start);
-        const endTime = timeToSecond(subtitle.end);
-        const previous = subtitles[index - 1];
-        const next = subtitles[index + 1];
-
-        if (index !== -1) {
-            if (!checkTime(subtitle.start)) {
-                toast({
-                    title: "Error",
-                    description: "startTime",
-                })
-                return false;
-            }
-
-            if (!checkTime(subtitle.end)) {
-                toast({
-                    title: "Error",
-                    description: "endTime",
-                })
-                return false;
-            }
-
-            if (startTime >= endTime) {
-                toast({
-                    title: "Error",
-                    description: "greater",
-                })
-                return false;
-            }
-
-            if ((previous && endTime < previous.startTime) || (next && startTime > next.endTime)) {
-                toast({
-                    title: "Error",
-                    description: "moveAcross",
-                })
-                return false;
-            }
-
-            if (previous && startTime < previous.endTime) {
-                toast({
-                    title: "Warning",
-                    description: "overlaps",
-                })
-            }
-        }
-        return true;
-    }
-
-
     // 验证字幕在数组范围内
     const checkSub = (sub: Subtitle) => {
         return subtitles.includes(sub);
     }
 
-    // 激活单个字幕的编辑
-    const editSubtitle = (sub: Subtitle) => {
-        if (!checkSub(sub)) return;
-        const subtitlesNew = subtitles.map((item: Subtitle) => {
-            // item.highlight = false;
-            item.editing = false;
-            return item;
-        });
-        sub.editing = true;
-        // updateSubtitles(subtitlesNew).then(() => {
-        //     // 改成当我点击当前行的时候，调用 videoSeek(sub);
-
-        // });
-    }
 
     /**
      * 点击行
@@ -205,18 +112,6 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
     const handleRowClick = (rowData: Subtitle) => {
         console.log("rowData", rowData)
         if (!checkSub(rowData)) return;
-        const subtitlesNew = subtitles.map((item: Subtitle) => {
-            item.highlight = false;
-            // item.editing = false;
-            return item;
-        });
-        rowData.highlight = true;
-        // updateSubtitles(subtitlesNew).then(() => {
-        //     // 改成当我点击当前行的时候，调用 videoSeek(sub);
-
-        // });
-        // console.log("Row clicked:", rowData);
-        // 在这里添加你想要执行的逻辑
         videoSeek(rowData);
     }
 
@@ -279,11 +174,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
 
     // 更新单个字幕
     const updateSubtitle = (index: number, sub: Subtitle) => {
-        const subtitlesNew = subtitles.map(item => {
-            item.highlight = false;
-            item.editing = false;
-            return item;
-        });
+        const subtitlesNew = [...subtitles];
 
         subtitlesNew[index] = sub;
         updateSubtitles(subtitlesNew, true).then(() => {
@@ -291,15 +182,8 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                 title: "Success",
                 description: "update",
             })
-            updateCurrentIndex(sub);
+            // updateCurrentIndex(sub);
         });
-    }
-
-    // 滚动到某个字幕
-    const updateCurrentIndex = (sub: Subtitle) => {
-        if (!checkSub(sub)) return;
-        const index = subtitles.indexOf(sub);
-        setIndex(index);
     }
 
     // 视频跳转到某个字幕的开始时间, 可选是否播放
@@ -327,28 +211,40 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
 
     // 验证字幕是否不规范
     const checkSubtitleIllegal = (sub: Subtitle): boolean => {
-        // console.log("sub-checkSubtitleIllegal", sub);
         const index: number = subtitles.indexOf(sub);
-        const previous: Subtitle | undefined = subtitles[index - 1];
-        return (previous && sub.startTime < previous.endTime) || !sub.check;
+        const previous: Subtitle | undefined = subtitles[index];
+        if (!((previous && sub.startTime <= previous.endTime) || sub.check)) {
+            console.log("index", index);
+            console.log("sub", sub);
+            console.log("previous", previous);
+            console.log("sub.startTime", sub.startTime);
+            console.log("previous.endTime", previous.endTime);
+            console.log("sub.check", sub.check);
+            console.log("sub.startTime < previous.endTime", (previous && sub.startTime <= previous.endTime) || sub.check, index);
+        }
+        return (previous && sub.startTime <= previous.endTime) || sub.check;
     }
 
 
-    useEffect(() => {
-        console.log("scrollIndex-Table", scrollIndex);
-        // 在数组 subtitles 中，当前 scrollIndex 下标，设置 highlight 为 true
-        const subtitlesNew = subtitles.map((item: Subtitle) => {
-            item.highlight = false;
-            return item;
-        });
-        if (scrollIndex !== -1) {
-            subtitlesNew[scrollIndex].highlight = true;
+    /**
+     * 初始化字幕, 从缓存中获取, 如果没有则初始化为空数组
+     */
+    const initStubs = () => {
+        const subs = storage.get('subtitles');
+        if (subs) {
+            // 将 subs 转换成 Subtitle 类型的数组对象
+            const subtitleArray = subs.map((item: Subtitle) => new Subtitle(item));
+            setSubtitles(subtitleArray);
         }
-        // updateSubtitles(subtitlesNew).then(() => {
-        //     // console.log("scrollIndex", scrollIndex);
-        // });
+    }
+    useEffect(() => {
+        initStubs();
+    }, []); // 将 subtitles 添加到依赖数组中
 
-    }, [scrollIndex]);
+
+    useEffect(() => {
+        console.log('Subtitles changed');
+    }, [subtitles]);
 
 
     return (
@@ -391,9 +287,9 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                                 <div
                                     key={props.key}
                                     className={`flex items-center ${props.index % 2 ? 'bg-gray-200' : 'bg-gray-100'} 
-                            ${props.rowData.editing ? 'bg-rose-300' : ''} 
-                            ${props.rowData.highlight ? 'bg-blue-400' : ''} 
-                            ${checkSubtitleIllegal(props.rowData) ? 'bg-red-200' : ''}`}
+                                    ${props.index == scrollIndex ? 'bg-rose-300' : ''} 
+                            
+                                    ${checkSubtitleIllegal(props.rowData) ? '' : 'bg-red-500'}`}
                                     style={props.style}
                                     onClick={() => handleRowClick(props.rowData)} // 添加点击事件处理器
                                 >
@@ -403,19 +299,21 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                                     <div className="w-28">
                                         {/* <span className="edit">{props.rowData.start}</span> */}
                                         <input
+                                            disabled
                                             maxLength={20}
                                             className=" bg-transparent border border-gray-300 rounded p-1 w-28 text-center"
-                                            defaultValue={props.rowData.start}
-                                            onChange={e => onChange('start', e.target.value)}
+                                            value={props.rowData.start}
+                                        // onChange={e => onChange('start', e.target.value)}
                                         />
                                     </div>
                                     <div className="w-28  text-center">
                                         {/* <span className="">{props.rowData.end}</span> */}
                                         <input
+                                            disabled
                                             maxLength={20}
                                             className=" bg-transparent border border-gray-300 rounded p-1 w-28 text-center "
-                                            defaultValue={props.rowData.end}
-                                            onChange={e => onChange('end', e.target.value)}
+                                            value={props.rowData.end}
+                                        // onChange={e => onChange('end', e.target.value)}
                                         />
                                     </div>
                                     <div className="w-20 ">
@@ -424,28 +322,28 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                                             disabled
                                             maxLength={20}
                                             className="bg-transparent border border-gray-300 rounded p-1 w-20 text-center"
-                                            defaultValue={props.rowData.duration}
+                                            value={props.rowData.duration}
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <span className={`${subtitle.editing ? 'hidden' : ''}`}>
+                                        <span className={`${props.index == scrollIndex ? 'hidden' : ''}`}>
                                             {/* {props.rowData.text.split(/\r?\n/).map((item: string, index: React.Key | null | undefined) => (
                                                 <p key={index} className="m-0">{escapeHTML(item)}</p>
                                             ))} */}
                                             {props.rowData.text}
                                         </span>
                                         <input
-                                            disabled={!props.rowData.editing}
+                                            disabled={props.index != scrollIndex}
                                             maxLength={100}
-                                            className={`bg-transparent border border-gray-300 rounded p-1 w-full ${subtitle.editing ? '' : 'hidden'}`}
-                                            defaultValue={unescapeHTML(props.rowData.text || '')}
-                                            onChange={e => onChange('text', e.target.value)}
+                                            className={`bg-transparent border border-gray-300 rounded p-1 w-full ${props.index == scrollIndex ? '' : 'hidden'}`}
+                                            value={props.rowData.text}
+                                            onChange={e => onChange('text', e.target.value, props.rowData)}
                                         />
                                     </div>
                                     <div className="flex w-20" >
-                                        <ClockIcon display={10} className="h-5 w-5 text-gray-500" onClick={() => onEdit(props.rowData)} />
-                                        <UserGroupIcon className="h-5 w-5 text-gray-500" onClick={() => onUpdate()} />
-                                        <InboxIcon className="h-5 w-5 text-gray-500" onClick={() => onRemove(props.rowData)} />
+                                        {/* <ClockIcon display={10} className="h-5 w-5 text-gray-500" onClick={() => onEdit(props.rowData)} /> */}
+                                        {/* <UserGroupIcon className="h-5 w-5 text-gray-500" onClick={() => onUpdate()} /> */}
+                                        <InboxIcon className="h-5 w-5 text-gray-500" onClick={() => onRemove(props.index)} />
                                     </div>
                                 </div>
                             );

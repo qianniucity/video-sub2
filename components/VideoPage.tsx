@@ -19,8 +19,8 @@ const defaultSubtitleUrl = '/video/ap.vtt';
 const VideoPage: React.FC = () => {
 
     const videoRef = useRef<HTMLVideoElement>(null);// 用于引用视频元素
-    const [subtitleUrl, setSubtitleUrl] = useState(defaultSubtitleUrl);// 字幕URL
-    const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);// 视频URL
+    const [subtitleUrl, setSubtitleUrl] = useState<string>(defaultSubtitleUrl);// 字幕URL
+    const [videoUrl, setVideoUrl] = useState<string>(defaultVideoUrl);// 视频URL
     const [subtitles, setSubtitles] = useState<Subtitle[]>([]);// 字幕数组
     const [wavesurferState, setWavesurferState] = useState<WaveSurfer>();// 波形图状态
     const [subtitle, setSubtitle] = useState<Subtitle>(new Subtitle({ start: '', end: '', text: '' })); // 当前字幕 
@@ -39,7 +39,7 @@ const VideoPage: React.FC = () => {
                 </div>
             </div>
             <div className="">
-                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={subtitles} setWavesurferState={setWavesurferState} setScrollIndex={setScrollIndex} />
+                <WaveformViewer videoRef={videoRef} videoUrl={videoUrl} subtitles={subtitles} wavesurferState={wavesurferState} setWavesurferState={setWavesurferState} setScrollIndex={setScrollIndex} />
             </div>
         </div>
     );

@@ -6,13 +6,14 @@ import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import Minimap from 'wavesurfer.js/dist/plugins/minimap.esm.js'
 import Subtitle from '@/type/subtitle';
 import SubtitleTimeLine from '@/type/subtitleTimeLine';
-import { randomColor, timeToSecond } from '@/utils/common';
+import { randomColor, secondToTime, timeToSecond } from '@/utils/common';
 
 interface WaveformViewerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
     videoUrl: string;
     subtitles: Subtitle[];
-    setWavesurferState?: (wavesurfer: WaveSurfer) => void;
+    wavesurferState?: WaveSurfer;
+    setWavesurferState: (wavesurfer: WaveSurfer) => void;
     setScrollIndex: (scrollIndex: number) => void;
 }
 
@@ -29,12 +30,11 @@ interface WaveformViewerProps {
  * @returns {JSX.Element} The WaveformViewer component.
  */
 
-const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles, setWavesurferState, setScrollIndex }) => {
+const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, subtitles, wavesurferState, setWavesurferState, setScrollIndex }) => {
     const waveSurferRef = useRef<WaveSurfer>(); // 波形图引用
     const waveContainerRef = useRef<HTMLDivElement>(null);// 波形图容器引用
     const sliderRef = useRef<HTMLInputElement>(null);// 缩放滑块引用
-    const [processedSubtitlesTimeLine, setProcessedSubtitlesTimeLine] = useState<SubtitleTimeLine[]>([]);// 当前字幕时间线
-
+    const [wsRegions, setWsRegions] = useState<RegionsPlugin>();
 
 
     /**
@@ -42,6 +42,8 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
      * @returns  {WaveSurfer} ws - 波形图实例
      */
     const initializeWaveSurfer = () => {
+        console.log("init ws");
+
         if (!videoRef.current || !waveContainerRef.current) return;
 
         const topTimeline = TimelinePlugin.create({
@@ -99,6 +101,8 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
             plugins: [topTimeline, bottomTimeline, hoverLine, minimap],
             minPxPerSec: 200,
         });
+
+        setWavesurferState(ws);
         return ws;
     };
 
@@ -130,56 +134,104 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
     };
 
     /**
+     * 初始化区域插件
+     * @param ws 
+     * @returns 
+     */
+    const initRegins = (ws: WaveSurfer) => {
+        console.log("init Regions");
+        if (!ws) return;
+        const wsRegions = ws.registerPlugin(RegionsPlugin.create());
+        setWsRegions(wsRegions)
+    }
+
+
+    /**
      * 字幕填充到波形图
      * 创建区域，根据字幕时间线创建区域，并添加到波形图
      * @param ws - 波形图实例
      */
-    const createRegions = (ws: WaveSurfer) => {
-        const wsRegions = ws.registerPlugin(RegionsPlugin.create());
+    const createRegions = (subtitlesTimeLine: SubtitleTimeLine[]) => {
+
+        if (!wavesurferState) return;
+
+        if (!wsRegions) return;
+        // 清除现有的所有区域,并取消所有区域监听
+        wsRegions.clearRegions();
+        wsRegions.unAll();
 
         // 添加字幕区域
-        ws.on('decode', () => {
-            processedSubtitlesTimeLine.forEach((subtitle, index) => {
-                wsRegions.addRegion({
-                    id: index.toString(),
-                    start: subtitle.start,
-                    end: subtitle.end,
-                    content: subtitle.text,
-                    color: randomColor(),
-                    resize: true,
-                    // contentEditable: true, // 可编辑
-                });
+        subtitlesTimeLine.forEach((subtitle, index) => {
+            wsRegions.addRegion({
+                id: index.toString(),
+                start: subtitle.start,
+                end: subtitle.end,
+                content: subtitle.text,
+                color: randomColor(),
+                resize: true,
+                // contentEditable: true, // 可编辑
             });
         });
+
 
         // 允许在波形上添加区域
         // wsRegions.enableDragSelection({
         //   color: 'rgba(255, 0, 0, 0.1)',
         // });
 
+
         // 添加区域事件监听
         wsRegions.on('region-updated', (region) => {
             console.log('Updated region', region);
+            console.log('region-start', region.start);
+            console.log('region-end', region.end);
+            console.log('region-id', region.content);
+            const subnew = new Subtitle({ start: secondToTime(region.start), end: secondToTime(region.end), text: region.content?.textContent ?? '' });
+            console.log('region-updated-subnew', subnew);
+            updateSubtitle(Number(region.id), subnew);
         });
 
         wsRegions.on('region-in', (region) => {
             // console.log("region-in-id", region.id)
+            console.log("region-in", region.content)
             setScrollIndex(Number(region.id))
         })
         wsRegions.on('region-out', (region) => {
-            // console.log('region-out', region)
+            console.log('region-out-id', region.id)
         })
         wsRegions.on('region-clicked', (region, e) => {
             e.stopPropagation() // prevent triggering a click on the waveform
             // region.play()
-            // console.log("region-clicked-id", region.id)
+            console.log("region-clicked-id", region.id)
             region.setOptions({ start: region.start, color: randomColor() })
             setScrollIndex(Number(region.id))
             // region.play()
-            ws.setTime(region.start)
-
+            wavesurferState.setTime(region.start)
         })
     };
+
+
+    // 更新单个字幕
+    // TODO 更新字幕数组，很多地方都监听，需要谨慎考虑
+    const updateSubtitle = (index: number, sub: Subtitle) => {
+        const subtitlesNew = [...subtitles];
+
+        subtitlesNew[index] = sub;
+        // setSubtitles(subtitlesNew);
+    }
+
+    // 监听波形图状态变化，更新字幕区域
+    useEffect(() => {
+        if (wavesurferState) {
+            wavesurferState.on('ready', () => {
+                createRegions(subtitles.map((subtitle) => {
+                    const start = timeToSecond(subtitle.start);
+                    const end = timeToSecond(subtitle.end);
+                    return new SubtitleTimeLine({ start: start, end: end, text: subtitle.text });
+                }));
+            });
+        }
+    }, [wavesurferState]);
 
 
     // 监听字幕变化，更新字幕时间线
@@ -189,22 +241,20 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
             const end = timeToSecond(subtitle.end);
             return new SubtitleTimeLine({ start: start, end: end, text: subtitle.text });
         });
-        setProcessedSubtitlesTimeLine(subtitlesTimeLine);
+        createRegions(subtitlesTimeLine);
     }, [subtitles]);
 
-    // 初始化波形图
+
+
+    // 初始化波形图,添加插件，设置参数,返回波形图实例
     useEffect(() => {
-        console.log("init ws");
+        // 清除现有的波形图
         waveSurferRef.current?.destroy();
 
         const ws = initializeWaveSurfer();
-        if (ws && setWavesurferState) {
-            setWavesurferState(ws);
-        }
-        if (ws) createRegions(ws);
+        if (ws) initRegins(ws);
         if (ws) createZoom(ws);
-
-    }, [processedSubtitlesTimeLine]);
+    }, []);
 
 
     return (
