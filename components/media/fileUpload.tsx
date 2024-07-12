@@ -5,6 +5,7 @@ import Subtitle from '@/type/subtitle';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import Storage from '@/utils/storage';
 
 interface FileUploadProps {
     setSubtitleUrl: (url: string) => void;
@@ -26,8 +27,8 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, subtitles, setVideoUrl }) => {
     const [subtitleContent, setSubtitleContent] = useState('');// 使用 useState 管理字幕原始内容 状态
     const [originalFileName, setOriginalFileName] = React.useState<string>('defaultName');// 字幕文件名
-
     const { toast } = useToast();// 业务信息提示
+    const storage = new Storage();// 创建 Storage 实例
 
     /**
      * 上传字幕文件,读取字幕文件并获取字幕URL
@@ -48,6 +49,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
             const subArray = urlToArr(subUrl)
             subArray.then((subList) => {
                 if (setSubtitles && subList.length > 0) setSubtitles(subList);
+                saveSubtitles(subList);
                 toast({
                     title: "Success",
                     description: "uploadSubtitle Success",
@@ -79,6 +81,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
         setSubtitleUrl(subUrl);
         return subUrl;
     }
+
     /**
      * 上传视频文件，读取视频文件并获取视频URL
      * 上传视频文件，清空字幕相关的所有状态
@@ -94,10 +97,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
             setVideoUrl(result);
 
             // 清空字幕相关的所有状态
-            setOriginalFileName('defaultName'); // 重置原始文件名为默认值
-            setSubtitleContent(''); // 清空字幕内容
-            setSubtitles([]); // 清空字幕数组
-            setSubtitleUrl(''); // 可选：如果您有一个状态来存储字幕的URL，也可以在这里重置
+            subtitleClear();
         }
         ).catch((error) => {
             toast({
@@ -112,7 +112,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
      * 保存字幕文件,将字幕文件转换为srt格式并下载
      * 
      */
-    const handleSave = () => {
+    const subtitleSave = () => {
         const element = document.createElement("a");
         const file = new Blob([subtitles ? convertToSrtFormat(subtitles) : subtitleContent], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
@@ -120,6 +120,36 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
     };
+    // 清空字幕
+    const subtitleClear = () => {
+        setOriginalFileName('defaultName'); // 重置原始文件名为默认值
+        setSubtitleContent(''); // 清空字幕内容
+        setSubtitles([]); // 清空字幕数组
+        setSubtitleUrl(''); // 可选：如果您有一个状态来存储字幕的URL，也可以在这里重置
+        removeSubtitlesCache();
+    };
+
+    // 存储字幕
+    const saveSubtitles = (subtitles: Subtitle[]) => {
+        storage.set(
+            'subtitles',
+            subtitles
+        );
+    }
+
+    // 存储videoUrl
+    const saveVideoUrl = (videoUrl: string) => {
+        storage.set(
+            'videoUrl',
+            videoUrl
+        );
+    }
+
+    // 删除缓存
+    const removeSubtitlesCache = () => {
+        storage.del('subtitles');
+        // window.location.reload();
+    }
 
     return (
         <div className='flex flex-wrap justify-start items-end mt-2'>
@@ -147,9 +177,15 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
 
             <div className="grid  max-w-sm items-end gap-1.5">
                 <button
-                    onClick={handleSave}
+                    onClick={subtitleSave}
                     type="button"
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">保存字幕</button>
+            </div>
+            <div className="grid  max-w-sm items-end gap-1.5">
+                <button
+                    onClick={subtitleClear}
+                    type="button"
+                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">清空字幕</button>
             </div>
         </div>
     );

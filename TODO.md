@@ -19,7 +19,7 @@ Web Workers:
 
 如果服务器支持，可以考虑使用HTTP/2或类似技术实现流式上传，这样可以在读取文件的同时上传，减少等待时间。
 下面是一个简单的示例，展示如何使用 FormData 和 fetch API直接上传文件，而不是先读取文件内容：
-```
+```javascript
 const uploadVideoDirectly = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -46,3 +46,157 @@ const uploadVideoDirectly = async (event: React.ChangeEvent<HTMLInputElement>) =
 
 
 # 字幕历史数据回滚功能
+
+# 清空字幕(完成)
+
+# 保存字幕 VTT SRT ASS
+
+# 字幕翻译
+
+```javascript
+// 时间轴整体偏移开关
+    overallOffsetSwitch() {
+        this.setState({
+            overallOffset: !this.state.overallOffset,
+        });
+    }
+```
+
+
+```javascript
+// 设置语言
+    setLocale(lang) {
+        this.setState(
+            {
+                lang,
+            },
+            () => {
+                setLocale(lang);
+                this.storage.set('lang', lang);
+            },
+        );
+    }
+
+```
+
+```javascript
+// 整体字幕翻译
+    translate(land, translator) {
+        if (!this.inTranslation) {
+            if (this.state.subtitles.length <= 1000) {
+                this.inTranslation = true;
+                translate(this.state.subtitles, land, translator)
+                    .then(subtitles => {
+                        this.inTranslation = false;
+                        this.updateSubtitles(subtitles, true).then(() => {
+                            toastr.success(t('translate'));
+                        });
+                    })
+                    .catch(error => {
+                        toastr.error(error.message);
+                        this.inTranslation = false;
+                        throw error;
+                    });
+            } else {
+                toastr.error(t('translateLenght'));
+            }
+        } else {
+            toastr.error(t('translateProgress'));
+        }
+    }
+
+```
+
+```javascript
+// 整体字幕时间偏移
+    timeOffset(time) {
+        const subtitles = this.state.subtitles.map(item => {
+            item.highlight = false;
+            item.editing = false;
+            item.start = secondToTime(clamp(item.startTime + time, 0, Infinity));
+            item.end = secondToTime(clamp(item.endTime + time, 0, Infinity));
+            return item;
+        });
+        this.updateSubtitles(subtitles, true).then(() => {
+            toastr.success(`${t('offset')}: ${time}s`);
+        });
+    }
+
+```
+
+```javascript
+  // 下载字幕
+    downloadSubtitles() {
+        downloadFile(vttToUrl(arrToVtt(this.state.subtitles)), `${Date.now()}.vtt`);
+        toastr.success(t('download'));
+    }
+
+    // 删除空字幕
+    removeEmptySubtitle() {
+        const subtitles = this.state.subtitles.filter(item => item.text.trim());
+        this.updateSubtitles(subtitles, true).then(() => {
+            toastr.success(t('removeEmpty'));
+        });
+    }
+
+    // 删除所有字幕
+    removeAllSubtitle() {
+        this.updateSubtitles([], true).then(() => {
+            toastr.success(t('removeAll'));
+        });
+    }
+
+```
+
+```javascript
+// 合并当前与下一个字幕
+    mergeSubtitle(sub) {
+        if (!this.checkSub(sub)) return;
+        const subtitles = this.state.subtitles;
+        const index = subtitles.indexOf(sub);
+        const current = subtitles[index];
+        const next = subtitles[index + 1];
+        if (!next) return;
+        const merge = new Sub(current.start, next.end, current.text + '\n' + next.text);
+        merge.highlight = true;
+        subtitles[index] = merge;
+        subtitles.splice(index + 1, 1);
+        this.updateSubtitles(subtitles, true).then(() => {
+            toastr.success(t('merge'));
+            this.updateCurrentIndex(sub);
+        });
+    }
+
+```
+
+```javascript
+// 插入单个新字幕
+    insertSubtitle(index) {
+        const subtitles = this.state.subtitles.map(item => {
+            item.highlight = false;
+            item.editing = false;
+            return item;
+        });
+        const previous = subtitles[index - 1];
+        const start = previous ? secondToTime(previous.endTime + 0.001) : '00:00:00.001';
+        const end = previous ? secondToTime(previous.endTime + 1.001) : '00:00:01.001';
+        const text = t('your');
+        const sub = new Sub(start, end, text);
+        sub.highlight = true;
+        subtitles.splice(index, 0, sub);
+        this.updateSubtitles(subtitles, true).then(() => {
+            toastr.success(t('add'));
+            this.updateCurrentIndex(sub);
+        });
+    }
+
+```
+
+```javascript
+
+```
+
+```javascript
+
+```
+

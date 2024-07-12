@@ -169,6 +169,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ videoRef, videoUrl, sub
                 content: subtitle.text,
                 color: randomColor(),
                 resize: true,
+                channelIdx:1
                 // contentEditable: true, // 可编辑
             });
         });

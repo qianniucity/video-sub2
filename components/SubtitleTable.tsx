@@ -115,11 +115,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
         videoSeek(rowData);
     }
 
-    // 删除缓存
-    const removeCache = () => {
-        storage.del('subtitles');
-        window.location.reload();
-    }
+
 
     // 历史回滚
     const undoSubtitle = () => {
@@ -139,8 +135,6 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
             })
         }
     }
-
-
 
 
     // 更新所有字幕数据, 可选是否更新字幕地址和是否回退操作
