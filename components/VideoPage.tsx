@@ -26,6 +26,13 @@ const VideoPage: React.FC = () => {
     const [subtitle, setSubtitle] = useState<Subtitle>(new Subtitle({ start: '', end: '', text: '' })); // 当前字幕 
     const [scrollIndex, setScrollIndex] = useState(-1);// 滚动索引  默认为-1
 
+
+    const [fontSize, setFontSize] = useState(30);
+    const [lineHeight, setLineHeight] = useState(16);
+    const [showTextShadow, setShowTextShadow] = useState(false);
+    const [subtitleColor, setSubtitleColor] = useState('#FFFFFF'); // 默认颜色为白色
+    const [showBackgroundColor, setShowBackgroundColor] = useState(false);
+
     return (
         <div >
             <Menu setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} subtitles={subtitles} setVideoUrl={setVideoUrl} />
@@ -33,8 +40,28 @@ const VideoPage: React.FC = () => {
             <WaveSurferProvider videoRef={videoRef} videoUrl={videoUrl}>
                 <div className="flex flex-wrap mt-2">
                     <div className="w-full md:w-1/2">
-                        <VideoPlayer videoRef={videoRef} videoUrl={videoUrl} subtitleUrl={subtitleUrl} />
-                        <Console />
+                        <VideoPlayer
+                            videoRef={videoRef}
+                            videoUrl={videoUrl}
+                            subtitleUrl={subtitleUrl}
+                            fontSize={fontSize}
+                            lineHeight={lineHeight}
+                            showTextShadow={showTextShadow}
+                            subtitleColor={subtitleColor}
+                            showBackgroundColor={showBackgroundColor}
+                        />
+                        <Console
+                            fontSize={fontSize}
+                            setFontSize={setFontSize}
+                            lineHeight={lineHeight}
+                            setLineHeight={setLineHeight}
+                            showTextShadow={showTextShadow}
+                            setShowTextShadow={setShowTextShadow}
+                            subtitleColor={subtitleColor}
+                            setSubtitleColor={setSubtitleColor}
+                            showBackgroundColor={showBackgroundColor}
+                            setShowBackgroundColor={setShowBackgroundColor}
+                        />
                     </div>
                     <div className="w-full md:w-1/2">
                         <SubtitleTable subtitles={subtitles} setSubtitles={setSubtitles} setSubtitleUrl={setSubtitleUrl} subtitle={subtitle} setSubtitle={setSubtitle} scrollIndex={scrollIndex} />
