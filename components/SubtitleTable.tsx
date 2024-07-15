@@ -5,14 +5,14 @@ import { cn } from "@/lib/utils";
 import Subtitle from '@/type/subtitle';
 import { checkTime, sleep, timeToSecond } from '@/utils/common';
 import { useToast } from "@/components/ui/use-toast"
-import { escapeHTML, subtitlesToUrl, unescapeHTML, vttToUrl } from '@/utils/subtitletrans';
+import { subtitlesToUrl } from '@/utils/subtitletrans';
 import Storage from '@/utils/storage';
-import WaveSurfer from 'wavesurfer.js';
 import {
     ClockIcon,
     UserGroupIcon,
     InboxIcon,
 } from '@heroicons/react/24/outline';
+import { useWaveSurfer } from './waveSurferContext';
 
 // TODO Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Grid which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here:
 
@@ -24,40 +24,32 @@ import {
 // ];
 
 /**
- * Props for the SubtitleTable component.
- * 
- * @prop subtitles - The array of subtitle objects.
- * @prop setSubtitles - Function to set the subtitles.
- * @prop setSubtitleUrl - Function to set the subtitle URL.
- * @prop wavesurferState - The WaveSurfer state.
- * @prop subtitle - The subtitle object.
- * @prop setSubtitle - Function to set the subtitle.
- * @prop scrollIndex - The scroll index.
- * 
+ * 字幕表格组件参数
+ * @interface SubtitleTableProps  字幕表格组件参数
+ * @property {Subtitle[]} subtitles  字幕数组
+ * @property {(subtitles: Subtitle[]) => void} setSubtitles  设置字幕数组
+ * @property {(url: string) => void} [setSubtitleUrl]  设置字幕地址
+ * @property {Subtitle} subtitle  当前字幕
+ * @property {(subtitle: Subtitle) => void} setSubtitle  设置当前字幕
+ * @property {number} scrollIndex  滚动索引
  */
 interface SubtitleTableProps {
     subtitles: Subtitle[];
     setSubtitles: (subtitles: Subtitle[]) => void;
     setSubtitleUrl?: (url: string) => void;
-    wavesurferState?: WaveSurfer;
     subtitle: Subtitle;
     setSubtitle: (subtitle: Subtitle) => void;
     scrollIndex: number;
 }
 
 /**
- * Component for displaying and editing subtitles in a table format.
- * 
- * @component
- * @param {SubtitleTableProps} props - The subtitle table props.
- * @returns {JSX.Element} The subtitle table component.
+ * 字幕表格组件
  */
-const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, wavesurferState, subtitle, setSubtitle, scrollIndex }) => {
-
-
+const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, subtitle, setSubtitle, scrollIndex }) => {
     const { toast } = useToast();// 业务信息提示
     const storage = new Storage();// 创建 Storage 实例
     const [history, setHistory] = useState<Subtitle[][]>([]);// 字幕历史记录
+    const { waveSurfer } = useWaveSurfer();
 
 
     /**
@@ -183,14 +175,14 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
     // 视频跳转到某个字幕的开始时间, 可选是否播放
     const videoSeek = (sub: Subtitle, isPlay: boolean = false) => {
         const currentTime = sub.startTime + 0.001;
-        if (!wavesurferState) return;
-        if (!wavesurferState.isPlaying() && currentTime > 0 && currentTime !== wavesurferState.getCurrentTime() && wavesurferState.getDuration()) {
-            if (currentTime <= wavesurferState.getDuration()) {
+        if (!waveSurfer) return;
+        if (!waveSurfer.isPlaying() && currentTime > 0 && currentTime !== waveSurfer.getCurrentTime() && waveSurfer.getDuration()) {
+            if (currentTime <= waveSurfer.getDuration()) {
                 // 由于字幕url是异步的，需要时间去同步
                 sleep(300).then(() => {
-                    wavesurferState.setTime(currentTime);
+                    waveSurfer.setTime(currentTime);
                     if (isPlay) {
-                        wavesurferState.play();
+                        waveSurfer.play();
                     }
                 });
             } else {
@@ -247,7 +239,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                 <div className="flex flex-1 border-r border-gray-800">
                     <Table
                         width={width}
-                        height={540}
+                        height={1020}
                         headerHeight={20}
                         rowHeight={30}
                         rowCount={subtitles.length}

@@ -152,9 +152,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
     }
 
     return (
-        <div className='flex flex-wrap justify-start items-end mt-2'>
+        <div className='flex flex-wrap justify-start items-end'>
             <div className="grid w-full max-w-sm items-end gap-1.5 mr-3">
-                <Label htmlFor="video_input">Upload 视频</Label>
+                {/* <Label htmlFor="video_input">Upload 视频</Label> */}
                 <Input
                     id="video_input"
                     accept='.mp4,.webm,.mov,.avi,.wmv,.flv,.mkv'
@@ -164,7 +164,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
                     aria-describedby="file_input_help" />
             </div>
             <div className="grid w-full max-w-sm items-end gap-1.5 mr-3">
-                <Label htmlFor="subtitle_input">Upload 字幕</Label>
+                {/* <Label htmlFor="subtitle_input">Upload 字幕</Label> */}
                 <Input
                     id="subtitle_input"
                     accept='.vtt,.srt,.ass'
@@ -181,12 +181,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
                     type="button"
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">保存字幕</button>
             </div>
-            <div className="grid  max-w-sm items-end gap-1.5">
-                <button
-                    onClick={subtitleClear}
-                    type="button"
-                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">清空字幕</button>
-            </div>
+            
         </div>
     );
 };

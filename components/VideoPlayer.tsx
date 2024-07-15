@@ -18,7 +18,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef, videoUrl, subtitleU
                     playsInline
                     style={{
                         width: '100%',
-                        maxWidth: '1200px',
                         margin: '0 auto',
                         display: 'block',
                     }}
