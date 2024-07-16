@@ -1,0 +1,56 @@
+{
+  "common": {
+    "copyright": "Copyright © ${currentYear} Qianniu Company. All rights reserved.",
+    "upload_video": "Upload Video",
+    "upload_subtitle": "Upload Subtitle",
+    "down_video": "Download Video",
+    "down_subtitle": "Download Subtitle",
+    "": ""
+  },
+  "subtitle_table": {
+    "title": "Subtitle List",
+    "subtitle": "Subtitle",
+    "subtitle_start": "Start Time",
+    "subtitle_end": "End Time",
+    "subtitle_duration": "Duration",
+    "subtitle_text": "Subtitle Text",
+    "subtitle_operation": "Operation",
+    "": ""
+  },
+  "control": {
+    "theme": {
+      "style": "Subtitle Style",
+      "edit": "Edit Subtitle",
+      "other": "Other Settings",
+      "": ""
+    },
+    "subtitle_setting": {
+      "title": "Subtitle Style",
+      "subtitle_color": "Font Color",
+      "subtitle_position": "Subtitle Position",
+      "subtitle_background_color": "Background Color",
+      "subtitle_font_family": "Font Family",
+      "subtitle_font_size": "Font Size",
+      "subtitle_font_opacity": "Font Opacity",
+      "subtitle_font_weight": "Font Weight",
+      "subtitle_font_style": "Font Style",
+      "subtitle_font_align": "Font Align",
+      "subtitle_font_shadow": "Font Shadow",
+      "subtitle_line_height": "Line Height",
+      "": ""
+    },
+    "subtitle_edit": {
+      "title": "Edit Subtitle",
+      "subtitle_text": "Subtitle Text",
+      "subtitle_start": "Subtitle Start",
+      "subtitle_end": "Subtitle End",
+      "subtitle_duration": "Subtitle Duration",
+      "": ""
+    },
+    "other": {
+      "title": "Other Settings",
+      "waveform_zoom": "Waveform Zoom",
+      "": ""
+    }
+  }
+}

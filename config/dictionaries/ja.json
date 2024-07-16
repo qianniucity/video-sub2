@@ -1,0 +1,56 @@
+{
+  "common": {
+    "copyright": "著作権 © ${currentYear} Qianniu Company. 保留されたすべての権利。",
+    "upload_video": "ビデオをアップロード",
+    "upload_subtitle": "字幕をアップロード",
+    "down_video": "ビデオをダウンロード",
+    "down_subtitle": "字幕をダウンロード",
+    "": ""
+  },
+  "subtitle_table": {
+    "title": "字幕リスト",
+    "subtitle": "字幕",
+    "subtitle_start": "開始時間",
+    "subtitle_end": "終了時間",
+    "subtitle_duration": "期間",
+    "subtitle_text": "字幕テキスト",
+    "subtitle_operation": "操作",
+    "": ""
+  },
+  "control": {
+    "theme": {
+      "style": "字幕スタイル",
+      "edit": "字幕を編集",
+      "other": "その他の設定",
+      "": ""
+    },
+    "subtitle_setting": {
+      "title": "字幕スタイル",
+      "subtitle_color": "フォントの色",
+      "subtitle_position": "字幕の位置",
+      "subtitle_background_color": "背景色",
+      "subtitle_font_family": "フォントファミリー",
+      "subtitle_font_size": "フォントサイズ",
+      "subtitle_font_opacity": "フォントの不透明度",
+      "subtitle_font_weight": "フォントの太さ",
+      "subtitle_font_style": "フォントスタイル",
+      "subtitle_font_align": "フォントの配置",
+      "subtitle_font_shadow": "フォントの影",
+      "subtitle_line_height": "行の高さ",
+      "": ""
+    },
+    "subtitle_edit": {
+      "title": "字幕を編集",
+      "subtitle_text": "字幕テキスト",
+      "subtitle_start": "字幕の開始",
+      "subtitle_end": "字幕の終了",
+      "subtitle_duration": "字幕の期間",
+      "": ""
+    },
+    "other": {
+      "title": "その他の設定",
+      "waveform_zoom": "波形のズーム",
+      "": ""
+    }
+  }
+}

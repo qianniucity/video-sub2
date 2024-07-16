@@ -1,7 +1,10 @@
 import React from 'react';
 import { Label } from '../ui/label';
 
+type Dictionary = Record<string, string>;
+
 interface SubtitleStyleProps {
+    dict: Dictionary;
     fontSize: number;
     setFontSize: (fontSize: number) => void;
     lineHeight: number;
@@ -16,6 +19,7 @@ interface SubtitleStyleProps {
 }
 
 const SubtitleStyle: React.FC<SubtitleStyleProps> = ({
+    dict,
     fontSize, setFontSize,
     lineHeight, setLineHeight,
     showTextShadow, setShowTextShadow,
@@ -24,9 +28,11 @@ const SubtitleStyle: React.FC<SubtitleStyleProps> = ({
 }) => {
     return (
         <ul role="list" className="space-y-4 text-gray-500 dark:text-gray-400">
-            <li className="flex space-x-2 rtl:space-x-reverse items-center">
+            <li className="flex space-x-2  items-center">
                 <Label htmlFor="font-size-slider" className="inline-flex items-center cursor-pointer">
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">调整字幕字体大小：</span>
+                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        {dict.subtitle_font_size}:
+                    </span>
                     <input
                         id="font-size-slider"
                         type="range"
@@ -37,10 +43,11 @@ const SubtitleStyle: React.FC<SubtitleStyleProps> = ({
                     />
                 </Label>
             </li>
-            <li className="flex space-x-2 rtl:space-x-reverse items-center">
+            <li className="flex space-x-2  items-center">
                 <Label htmlFor="line-height-slider" className="inline-flex items-center cursor-pointer">
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">line-height：</span>
-
+                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        {dict.subtitle_line_height}:
+                    </span>
                     <input
                         id="line-height-slider"
                         type="range"
@@ -51,10 +58,11 @@ const SubtitleStyle: React.FC<SubtitleStyleProps> = ({
                     />
                 </Label>
             </li>
-            <li className="flex space-x-2 rtl:space-x-reverse items-center">
+            <li className="flex space-x-2  items-center">
                 <Label htmlFor="subtitle-color-picker" className="inline-flex items-center cursor-pointer">
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">选择字幕颜色：</span>
-
+                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        {dict.subtitle_color}:
+                    </span>
                     <input
                         id="subtitle-color-picker"
                         type="color"
@@ -63,27 +71,31 @@ const SubtitleStyle: React.FC<SubtitleStyleProps> = ({
                     />
                 </Label>
             </li>
-            <li className="flex space-x-2 rtl:space-x-reverse items-center">
+            <li className="flex space-x-2  items-center">
                 <Label className="inline-flex items-center cursor-pointer">
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">阴影：</span>
+                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        {dict.subtitle_font_shadow}:
+                    </span>
                     <input
                         type="checkbox"
                         value={showTextShadow.toString()}
                         onChange={(e) => setShowTextShadow(e.target.checked)}
                         className="sr-only peer" />
-                    <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
 
                 </Label>
             </li>
-            <li className="flex space-x-2 rtl:space-x-reverse items-center">
+            <li className="flex space-x-2  items-center">
                 <Label className="inline-flex items-center cursor-pointer">
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">字幕背景：</span>
+                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        {dict.subtitle_background_color}:
+                    </span>
                     <input
                         type="checkbox"
                         value={showBackgroundColor.toString()}
                         onClick={() => setShowBackgroundColor(!showBackgroundColor)}
                         className="sr-only peer" />
-                    <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </Label>
             </li>
         </ul>

@@ -1,0 +1,56 @@
+{
+  "common": {
+    "copyright": "版权所有 © ${currentYear} Qianniu公司。保留所有权利。",
+    "upload_video": "上传视频",
+    "upload_subtitle": "上传字幕",
+    "down_video": "下载视频",
+    "down_subtitle": "下载字幕",
+    "": ""
+  },
+  "subtitle_table": {
+    "title": "字幕列表",
+    "subtitle": "字幕",
+    "subtitle_start": "开始时间",
+    "subtitle_end": "结束时间",
+    "subtitle_duration": "时长",
+    "subtitle_text": "字幕文本",
+    "subtitle_operation": "操作",
+    "": ""
+  },
+  "control": {
+    "theme": {
+      "style": "字幕样式",
+      "edit": "字幕编辑",
+      "other": "其他设置",
+      "": ""
+    },
+    "subtitle_setting": {
+      "title": "字幕样式",
+      "subtitle_color": "字体颜色",
+      "subtitle_position": "字幕位置",
+      "subtitle_background_color": "背景颜色",
+      "subtitle_font_family": "字体",
+      "subtitle_font_size": "字体大小",
+      "subtitle_font_opacity": "字体透明度",
+      "subtitle_font_weight": "字体粗细",
+      "subtitle_font_style": "字体样式",
+      "subtitle_font_align": "字体对齐",
+      "subtitle_font_shadow": "字体阴影",
+      "subtitle_line_height": "字幕高度",
+      "": ""
+    },
+    "subtitle_edit":{
+      "title": "字幕编辑",
+      "subtitle_text": "字幕文本",
+      "subtitle_start": "字幕开始",
+      "subtitle_end": "字幕结束",
+      "subtitle_duration": "字幕持续时间",
+      "": ""
+    },
+    "other": {
+      "title": "其他设置",
+      "waveform_zoom": "波形缩放",
+      "": ""
+    }
+  }
+}

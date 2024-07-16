@@ -28,6 +28,10 @@ import {
 //     // 更多字幕...
 // ];
 
+
+type Dictionary = Record<string, string>;
+
+
 /**
  * 字幕表格组件参数
  * @interface SubtitleTableProps  字幕表格组件参数
@@ -39,6 +43,7 @@ import {
  * @property {number} scrollIndex  滚动索引
  */
 interface SubtitleTableProps {
+    dict: Dictionary;
     subtitles: Subtitle[];
     setSubtitles: (subtitles: Subtitle[]) => void;
     setSubtitleUrl?: (url: string) => void;
@@ -50,7 +55,7 @@ interface SubtitleTableProps {
 /**
  * 字幕表格组件
  */
-const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, setSubtitleUrl, subtitle, setSubtitle, scrollIndex }) => {
+const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubtitles, setSubtitleUrl, subtitle, setSubtitle, scrollIndex }) => {
     const { toast } = useToast();// 业务信息提示
     const storage = new Storage();// 创建 Storage 实例
     const [history, setHistory] = useState<Subtitle[][]>([]);// 字幕历史记录
@@ -258,17 +263,19 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                                         #
                                     </div>
                                     <div className="row w-28 text-center px-6 py-3">
-                                        {cn("start")}
+                                        {dict.subtitle_start}
                                     </div>
                                     <div className="row w-28 text-center px-6 py-3">
-                                        {cn("end")}
+                                        {dict.subtitle_end}
                                     </div>
-                                    <div className="row w-20 text-center px-6 py-3">{cn("duration")}</div>
+                                    <div className="row w-20 text-center px-6 py-3">
+                                        {dict.subtitle_duration}
+                                    </div>
                                     <div className="row flex-1 text-center px-6 py-3">
-                                        {cn("text")}
+                                        {dict.subtitle_text}
                                     </div>
                                     <div className="row w-40 text-center px-6 py-3">
-                                        {cn("operation")}
+                                        {dict.subtitle_operation}
                                     </div>
                                 </div>
                             );

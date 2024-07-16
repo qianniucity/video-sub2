@@ -1,0 +1,56 @@
+{
+  "common": {
+    "copyright": "저작권 © ${currentYear} Qianniu Company. 모든 권리 보유.",
+    "upload_video": "비디오 업로드",
+    "upload_subtitle": "자막 업로드",
+    "down_video": "비디오 다운로드",
+    "down_subtitle": "자막 다운로드",
+    "": ""
+  },
+  "subtitle_table": {
+    "title": "자막 목록",
+    "subtitle": "자막",
+    "subtitle_start": "시작 시간",
+    "subtitle_end": "종료 시간",
+    "subtitle_duration": "지속 시간",
+    "subtitle_text": "자막 텍스트",
+    "subtitle_operation": "작업",
+    "": ""
+  },
+  "control": {
+    "theme": {
+      "style": "자막 스타일",
+      "edit": "자막 편집",
+      "other": "기타 설정",
+      "": ""
+    },
+    "subtitle_setting": {
+      "title": "자막 스타일",
+      "subtitle_color": "글꼴 색상",
+      "subtitle_position": "자막 위치",
+      "subtitle_background_color": "배경 색상",
+      "subtitle_font_family": "글꼴 가족",
+      "subtitle_font_size": "글꼴 크기",
+      "subtitle_font_opacity": "글꼴 불투명도",
+      "subtitle_font_weight": "글꼴 두께",
+      "subtitle_font_style": "글꼴 스타일",
+      "subtitle_font_align": "글꼴 정렬",
+      "subtitle_font_shadow": "글꼴 그림자",
+      "subtitle_line_height": "줄 높이",
+      "": ""
+    },
+    "subtitle_edit": {
+      "title": "자막 편집",
+      "subtitle_text": "자막 텍스트",
+      "subtitle_start": "자막 시작",
+      "subtitle_end": "자막 종료",
+      "subtitle_duration": "자막 지속 시간",
+      "": ""
+    },
+    "other": {
+      "title": "기타 설정",
+      "waveform_zoom": "파형 확대",
+      "": ""
+    }
+  }
+}
