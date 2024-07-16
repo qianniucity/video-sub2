@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import SubtitleStyle from './control/subtitleStyle';
 
 interface SettingProps {
     fontSize: number;
@@ -45,70 +46,7 @@ const Console: React.FC<SettingProps> = ({
             </ul>
             <div id="defaultTabContent">
                 <div className={`${activeTab === '#subtitles-type' ? 'block' : 'hidden'} p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800`} id="subtitles-type" role="tabpanel" aria-labelledby="subtitles-type-tab">
-                    <ul role="list" className="space-y-4 text-gray-500 dark:text-gray-400">
-                        <li className="flex space-x-2 rtl:space-x-reverse items-center">
-                            <label htmlFor="font-size-slider">调整字幕字体大小:</label>
-                            <input
-                                id="font-size-slider"
-                                type="range"
-                                min="20"
-                                max="50"
-                                value={fontSize}
-                                onChange={(e) => setFontSize(Number(e.target.value))}
-                            />
-                        </li>
-                        <li className="flex space-x-2 rtl:space-x-reverse items-center">
-                            <label htmlFor="line-height-slider">line-height:</label>
-                            <input
-                                id="line-height-slider"
-                                type="range"
-                                min="10"
-                                max="300"
-                                value={lineHeight}
-                                onChange={(e) => setLineHeight(Number(e.target.value))}
-                            />
-                        </li>
-                        <li className="flex space-x-2 rtl:space-x-reverse items-center">
-                            <label htmlFor="subtitle-color-picker">选择字幕颜色:</label>
-                            <input
-                                id="subtitle-color-picker"
-                                type="color"
-                                value={subtitleColor}
-                                onChange={(e) => setSubtitleColor(e.target.value)} // 步骤 2: 用户选择颜色时更新 subtitleColor 状态
-                            />
-                        </li>
-                        <li className="flex space-x-2 rtl:space-x-reverse items-center">
-                            <button
-                                onClick={() => setShowTextShadow(!showTextShadow)}
-                                style={{
-                                    padding: '10px 10px',
-                                    border: 'none',
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
-                                    borderRadius: '9999px', // 设置一个很大的 border-radius 使按钮变成胶囊形状
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                {showTextShadow ? '隐藏 Text Shadow' : '显示 Text Shadow'}
-                            </button>
-                        </li>
-                        <li className="flex space-x-2 rtl:space-x-reverse items-center">
-                            <button
-                                onClick={() => setShowBackgroundColor(!showBackgroundColor)}
-                                style={{
-                                    padding: '10px 20px',
-                                    border: 'none',
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
-                                    borderRadius: '9999px',
-                                    cursor: 'pointer',
-                                    margin: '10px 0', // 添加一些外边距
-                                }}
-                            >
-                                {showBackgroundColor ? '隐藏背景颜色' : '显示背景颜色'}
-                            </button>
-                        </li>
-                    </ul>
+                    <SubtitleStyle fontSize={fontSize} setFontSize={setFontSize} lineHeight={lineHeight} setLineHeight={setLineHeight} showTextShadow={showTextShadow} setShowTextShadow={setShowTextShadow} subtitleColor={subtitleColor} setSubtitleColor={setSubtitleColor} showBackgroundColor={showBackgroundColor} setShowBackgroundColor={setShowBackgroundColor} />
                 </div>
                 <div className={`${activeTab === '#subtitles-edit' ? 'block' : 'hidden'} p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800`} id="subtitles-edit" role="tabpanel" aria-labelledby="subtitles-edit-tab">
                     <ul role="list" className="space-y-4 text-gray-500 dark:text-gray-400">
