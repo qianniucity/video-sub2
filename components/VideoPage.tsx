@@ -63,7 +63,7 @@ const VideoPage: React.FC = () => {
                             setShowBackgroundColor={setShowBackgroundColor}
                         />
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full md:w-1/2 h-full">
                         <SubtitleTable subtitles={subtitles} setSubtitles={setSubtitles} setSubtitleUrl={setSubtitleUrl} subtitle={subtitle} setSubtitle={setSubtitle} scrollIndex={scrollIndex} />
                     </div>
                 </div>

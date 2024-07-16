@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster"
 
 import { cn } from "@/lib/utils"
+import { ThemeProvider } from "@/components/darkmodel/theme-provider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -25,7 +26,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontSans.variable
         )}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

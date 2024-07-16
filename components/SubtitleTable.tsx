@@ -7,12 +7,17 @@ import { checkTime, sleep, timeToSecond } from '@/utils/common';
 import { useToast } from "@/components/ui/use-toast"
 import { subtitlesToUrl } from '@/utils/subtitletrans';
 import Storage from '@/utils/storage';
-import {
-    ClockIcon,
-    UserGroupIcon,
-    InboxIcon,
-} from '@heroicons/react/24/outline';
+import { Cross2Icon, EraserIcon } from "@radix-ui/react-icons"
 import { useWaveSurfer } from './waveSurferContext';
+import { Input } from './ui/input';
+
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 
 // TODO Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Grid which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here:
 
@@ -236,7 +241,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
     return (
         <AutoSizer disableHeight>
             {({ width }) => (
-                <div className="flex flex-1 border-r border-gray-800">
+                <div className="flex w-full text-sm text-gray-500 dark:text-gray-400">
                     <Table
                         width={width}
                         height={1020}
@@ -248,21 +253,21 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
 
                         headerRowRenderer={() => {
                             return (
-                                <div className="flex bg-blue-500 border-b border-gray-800">
-                                    <div className="row w-12 text-center">
+                                <div className="flex text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <div className="row w-12 text-center px-6 py-3">
                                         #
                                     </div>
-                                    <div className="row w-28 text-center">
+                                    <div className="row w-28 text-center px-6 py-3">
                                         {cn("start")}
                                     </div>
-                                    <div className="row w-28 text-center">
+                                    <div className="row w-28 text-center px-6 py-3">
                                         {cn("end")}
                                     </div>
-                                    <div className="row w-20 text-center">{cn("duration")}</div>
-                                    <div className="row flex-1 text-center">
+                                    <div className="row w-20 text-center px-6 py-3">{cn("duration")}</div>
+                                    <div className="row flex-1 text-center px-6 py-3">
                                         {cn("text")}
                                     </div>
-                                    <div className="row w-20 text-center">
+                                    <div className="row w-40 text-center px-6 py-3">
                                         {cn("operation")}
                                     </div>
                                 </div>
@@ -272,79 +277,80 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ subtitles, setSubtitles, 
                             return (
                                 <div
                                     key={props.key}
-                                    className={`flex items-center ${props.index % 2 ? 'bg-gray-200' : 'bg-gray-100'} 
-                                    ${props.index == scrollIndex ? 'bg-rose-300' : ''} 
+                                    className={`flex items-center  border-b  ${props.index % 2 ? 'bg-gray-200  dark:bg-gray-800 dark:border-gray-700' : 'bg-gray-100 dark:bg-gray-700 dark:border-gray-600'} 
+                                    ${props.index == scrollIndex ? 'bg-rose-300 dark:bg-zinc-100' : ''} 
                             
                                     ${checkSubtitleIllegal(props.rowData) ? '' : 'bg-red-500'}`}
                                     style={props.style}
                                     onClick={() => handleRowClick(props.rowData)} // 添加点击事件处理器
                                 >
-                                    <div className="w-12 text-center">
+                                    <div className="w-12 text-center py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         {props.index + 1}
                                     </div>
                                     <div className="w-28">
                                         {/* <span className="edit">{props.rowData.start}</span> */}
-                                        <input
+                                        <Input
                                             disabled
                                             maxLength={20}
-                                            className=" bg-transparent border border-gray-300 rounded p-1 w-28 text-center"
+                                            className="py-4"
                                             value={props.rowData.start}
                                         // onChange={e => onChange('start', e.target.value)}
                                         />
                                     </div>
-                                    <div className="w-28  text-center">
+                                    <div className="w-28">
                                         {/* <span className="">{props.rowData.end}</span> */}
-                                        <input
+                                        <Input
                                             disabled
                                             maxLength={20}
-                                            className=" bg-transparent border border-gray-300 rounded p-1 w-28 text-center "
+                                            className="py-4"
                                             value={props.rowData.end}
                                         // onChange={e => onChange('end', e.target.value)}
                                         />
                                     </div>
                                     <div className="w-20 ">
                                         {/* <span className="edit">{props.rowData.duration}</span> */}
-                                        <input
+                                        <Input
                                             disabled
                                             maxLength={20}
-                                            className="bg-transparent border border-gray-300 rounded p-1 w-20 text-center"
+                                            className="py-4"
                                             value={props.rowData.duration}
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <span className={`${props.index == scrollIndex ? 'hidden' : ''}`}>
+                                        <span className={`py-4 ${props.index == scrollIndex ? 'hidden' : ''}`}>
                                             {/* {props.rowData.text.split(/\r?\n/).map((item: string, index: React.Key | null | undefined) => (
                                                 <p key={index} className="m-0">{escapeHTML(item)}</p>
                                             ))} */}
                                             {props.rowData.text}
                                         </span>
-                                        <input
+                                        <Input
                                             disabled={props.index != scrollIndex}
                                             maxLength={100}
-                                            className={`bg-transparent border border-gray-300 rounded p-1 w-full ${props.index == scrollIndex ? '' : 'hidden'}`}
+                                            className={`py-4 ${props.index == scrollIndex ? '' : 'hidden'}`}
                                             value={props.rowData.text}
                                             onChange={e => onChange('text', e.target.value, props.rowData)}
                                         />
                                     </div>
-                                    <div className="flex w-20" >
-                                        {/* <ClockIcon display={10} className="h-5 w-5 text-gray-500" onClick={() => onEdit(props.rowData)} /> */}
-                                        {/* <UserGroupIcon className="h-5 w-5 text-gray-500" onClick={() => onUpdate()} /> */}
-                                        <InboxIcon className="h-5 w-5 text-gray-500" onClick={() => onRemove(props.index)} />
+                                    <div className="flex w-20 " >
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <EraserIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-0 dark:scale-100" onClick={() => onRemove(props.index)} />
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>{cn("del line")}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     </div>
                                 </div>
                             );
                         }}
-
                     >
-                        {/* <Column label="序号" dataKey="id" width={50} cellRenderer={({ rowIndex }) => rowIndex + 1} />
-                        <Column label="开始时间" dataKey="start" width={120} />
-                        <Column label="结束时间" dataKey="end" width={120} />
-                        <Column label="内容" dataKey="text" width={width - 290} /> */}
                     </Table>
                 </div>
             )}
         </AutoSizer>
-
     );
 };
 
