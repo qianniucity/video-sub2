@@ -156,21 +156,12 @@ const Menu: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, subtitl
                         <Image src="favicon.svg" alt="Flowbite Logo" width={32} height={32} />
                         <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">videoSub2</span>
                     </a>
-                    <ul className="flex  flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
-                        {/* <li>
-                            <Input
-                                id="video_input"
-                                accept='.mp4,.webm,.mov,.avi,.wmv,.flv,.mkv'
-                                type="file"
-                                // onChange={uploadVideo}
-                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                placeholder="上传视频"
-                                aria-describedby="file_input_help" />
-                        </li> */}
+                    <ul className="flex  flex-col items-center mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
                         <li>
                             <Label
+                                className=''
                                 htmlFor="video-file">
-                                <p className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 md:px-5 md:py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 select-none">上传视频</p>
+                                <p className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">上传视频</p>
                                 <input
                                     id="video-file"
                                     onChange={uploadVideo}
@@ -181,7 +172,7 @@ const Menu: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, subtitl
                         <li>
                             <Label
                                 htmlFor="subtitles-file">
-                                <p className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 md:px-5 md:py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 select-none">上传字幕</p>
+                                <p className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">上传字幕</p>
                                 <input
                                     id="subtitles-file"
                                     onChange={uploadSubtitle}
@@ -211,7 +202,7 @@ const Menu: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, subtitl
                         <li>
                             <Label
                                 htmlFor="subtitles-save">
-                                <p className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 md:px-5 md:py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 select-none">保存字幕</p>
+                                <p className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">保存字幕</p>
                                 <input
                                     id="subtitles-save"
                                     onClick={subtitleSave}
