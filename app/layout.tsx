@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster"
 
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/darkmodel/theme-provider";
+import { Footer } from "@/components/footer";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           disableTransitionOnChange
         >
           {children}
+          <Footer />
         </ThemeProvider>
         <Toaster />
       </body>
