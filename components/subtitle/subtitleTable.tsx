@@ -8,8 +8,8 @@ import { useToast } from "@/components/ui/use-toast"
 import { subtitlesToUrl } from '@/utils/subtitletrans';
 import Storage from '@/utils/storage';
 import { Cross2Icon, EraserIcon } from "@radix-ui/react-icons"
-import { useWaveSurfer } from './waveSurferContext';
-import { Input } from '../ui/input';
+import { useWaveSurfer } from '@/components/subtitle/waveSurferContext';
+import { Input } from '@/components/ui/input';
 
 import {
     Tooltip,

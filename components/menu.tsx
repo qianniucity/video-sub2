@@ -3,12 +3,11 @@ import { getExt, convertToSrtFormat, getName, processMediaFileAndGetUrl } from '
 import { processSubtitleFileType, urlToArr, vttToUrl } from '@/utils/subtitletrans';
 import Subtitle from '@/type/subtitle';
 import { useToast } from '@/components/ui/use-toast';
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Storage from '@/utils/storage';
 import Image from 'next/image';
 import { ModeToggle } from './darkmodel/modeToggle';
-import { LocaleChange } from './ui/locale-change';
+import { LocaleChange } from '@/components/ui/locale-change';
 import { UploadIcon, DownloadIcon } from "@radix-ui/react-icons"
 
 

@@ -3,7 +3,7 @@ import WaveSurfer from 'wavesurfer.js';
 import Subtitle from '@/type/subtitle';
 import SubtitleTimeLine from '@/type/subtitleTimeLine';
 import { randomColor, secondToTime, timeToSecond } from '@/utils/common';
-import { useWaveSurfer } from './waveSurferContext';
+import { useWaveSurfer } from '@/components/subtitle/waveSurferContext';
 
 interface WaveformViewerProps {
     subtitles: Subtitle[];
