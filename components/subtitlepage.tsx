@@ -9,10 +9,6 @@ import { WaveSurferProvider } from '@/components/subtitle/waveSurferContext';
 import WaveformViewer from '@/components/subtitle/waveformViewer';
 import VideoPlayer from '@/components/player';
 
-const defaultVideoUrl = '/video/video.mp4';
-const defaultSubtitleUrl = '/video/ap.vtt';
-
-
 
 interface Dictionary {
     // 根据你的 JSON 结构定义类型
@@ -31,8 +27,8 @@ interface SubtitlePageProps {
 const SubtitlePage: React.FC<SubtitlePageProps> = ({ dict }) => {
 
     const videoRef = useRef<HTMLVideoElement>(null);// 用于引用视频元素
-    const [subtitleUrl, setSubtitleUrl] = useState<string>(defaultSubtitleUrl);// 字幕URL
-    const [videoUrl, setVideoUrl] = useState<string>(defaultVideoUrl);// 视频URL
+    const [subtitleUrl, setSubtitleUrl] = useState<string>("");// 字幕URL
+    const [videoUrl, setVideoUrl] = useState<string>("");// 视频URL
     const [subtitles, setSubtitles] = useState<Subtitle[]>([]);// 字幕数组
     const [subtitle, setSubtitle] = useState<Subtitle>(new Subtitle({ start: '', end: '', text: '' })); // 当前字幕 
     const [scrollIndex, setScrollIndex] = useState(-1);// 滚动索引  默认为-1
