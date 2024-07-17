@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Column, Table, AutoSizer } from 'react-virtualized';
 import 'react-virtualized/styles.css'; // 导入样式
 import { cn } from "@/lib/utils";
@@ -92,12 +92,11 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubti
         // 数组是引用类型，所以需要复制一份才会更新 subtitles 状态
         const newSubtitles = [...subtitles];
         newSubtitles.splice(index, 1);
-        updateSubtitles(newSubtitles, true).then(() => {
-            toast({
-                title: "success",
-                description: "delete subtitle",
-            })
-        });
+        updateSubtitles(newSubtitles, true);
+        toast({
+            title: "success",
+            description: "delete subtitle",
+        })
     }
 
     // 验证字幕在数组范围内
@@ -124,12 +123,11 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubti
         history.pop();
         const subtitles = history[history.length - 1];
         if (subtitles) {
-            updateSubtitles(subtitles, true, true).then(() => {
-                toast({
-                    title: "success",
-                    description: "history",
-                })
-            });
+            updateSubtitles(subtitles, true, true);
+            toast({
+                title: "success",
+                description: "history",
+            })
         } else {
             toast({
                 title: "warning",
@@ -141,30 +139,16 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubti
 
     // 更新所有字幕数据, 可选是否更新字幕地址和是否回退操作
     const updateSubtitles = (subtitleList: Subtitle[], updateUrl?: boolean, isUndo?: boolean) => {
-        return new Promise(resolve => {
-            if (setSubtitles) {
-                setSubtitles(subtitleList);
-            }
-            if (updateUrl) {
-                const subUrl = subtitlesToUrl(subtitleList);
-                if (setSubtitleUrl) {
-                    setSubtitleUrl(subUrl);
-                }
+        setSubtitles(subtitleList);
+        if (updateUrl) {
+            const subUrl = subtitlesToUrl(subtitleList);
+            setSubtitleUrl && setSubtitleUrl(subUrl);
 
-                if (!isUndo) {
-                    if (history.length >= 100) {
-                        setHistory(prevHistory => prevHistory.slice(1));
-                    }
-                    setHistory([subtitles.map(sub => sub.clone)]);
-                }
-
-                storage.set(
-                    'subtitles',
-                    subtitleList.map((item: Subtitle) => ({ ...item }))
-                );
+            if (!isUndo) {
+                setHistory(prevHistory => [...prevHistory, subtitleList]);
             }
-            resolve(subtitleList);
-        });
+            storage.set('subtitles', subtitleList);
+        }
     }
 
 
@@ -173,13 +157,12 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubti
         const subtitlesNew = [...subtitles];
 
         subtitlesNew[index] = sub;
-        updateSubtitles(subtitlesNew, true).then(() => {
-            toast({
-                title: "Success",
-                description: "update",
-            })
-            // updateCurrentIndex(sub);
+        updateSubtitles(subtitlesNew, true);
+        toast({
+            title: "Success",
+            description: "update",
         });
+        // updateCurrentIndex(sub);
     }
 
     // 视频跳转到某个字幕的开始时间, 可选是否播放
@@ -230,7 +213,7 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubti
         if (subs) {
             // 将 subs 转换成 Subtitle 类型的数组对象
             const subtitleArray = subs.map((item: Subtitle) => new Subtitle(item));
-            setSubtitles(subtitleArray);
+            updateSubtitles(subtitleArray);
         }
     }
     useEffect(() => {

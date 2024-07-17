@@ -22,7 +22,7 @@ const dictionaries = {
 };
 
 export const getDictionary = async (locale: Locale): Promise<Dictionary> =>
-  dictionaries[locale]?.() ?? dictionaries.zh();
+  dictionaries[locale]?.() ?? dictionaries.en();
 
 export const getDictionarySync = (locale: Locale): Promise<Dictionary> =>
-  dictionaries[locale]?.() ?? dictionaries.zh();
+  dictionaries[locale]?.() ?? dictionaries.en();
