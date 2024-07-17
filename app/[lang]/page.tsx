@@ -1,4 +1,4 @@
-import VideoPage from '@/components/videoSubPage';
+import SubtitlePage from '@/components/subtitlepage';
 import React from 'react';
 import type { Locale } from "@/config/i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
@@ -14,7 +14,7 @@ export default async function Home({
 
   return (
     <main>
-      <VideoPage dict={dict} />
+      <SubtitlePage dict={dict} />
     </main>
   );
 }

@@ -7,7 +7,7 @@ import Console from '@/components/control/console';
 import Menu from '@/components/menu';
 import { WaveSurferProvider } from '@/components/subtitle/waveSurferContext';
 import WaveformViewer from '@/components/subtitle/waveformViewer';
-import VideoPlayer from '@/components/videoplayer';
+import VideoPlayer from '@/components/player';
 
 const defaultVideoUrl = '/video/video.mp4';
 const defaultSubtitleUrl = '/video/ap.vtt';
@@ -19,7 +19,7 @@ interface Dictionary {
     [key: string]: any;
 }
 
-interface VideoPageProps {
+interface SubtitlePageProps {
     dict: Dictionary;
 }
 
@@ -28,7 +28,7 @@ interface VideoPageProps {
  * 如字幕内容、字幕URL、视频URL、字幕数组、波形图状态、当前字幕、滚动索引等
  * @component
  */
-const VideoPage: React.FC<VideoPageProps> = ({ dict }) => {
+const SubtitlePage: React.FC<SubtitlePageProps> = ({ dict }) => {
 
     const videoRef = useRef<HTMLVideoElement>(null);// 用于引用视频元素
     const [subtitleUrl, setSubtitleUrl] = useState<string>(defaultSubtitleUrl);// 字幕URL
@@ -87,4 +87,4 @@ const VideoPage: React.FC<VideoPageProps> = ({ dict }) => {
     );
 };
 
-export default VideoPage;
+export default SubtitlePage;
