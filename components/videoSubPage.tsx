@@ -7,7 +7,7 @@ import Console from '@/components/control/console';
 import Menu from '@/components/menu';
 import { WaveSurferProvider } from '@/components/subtitle/waveSurferContext';
 import WaveformViewer from '@/components/subtitle/waveformViewer';
-import VideoPlayer from './videoplayer';
+import VideoPlayer from '@/components/videoplayer';
 
 const defaultVideoUrl = '/video/video.mp4';
 const defaultSubtitleUrl = '/video/ap.vtt';
