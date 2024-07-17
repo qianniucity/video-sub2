@@ -6,7 +6,7 @@ import Subtitle from '@/type/subtitle';
 import { checkTime, sleep, timeToSecond } from '@/utils/common';
 import { useToast } from "@/components/ui/use-toast"
 import { subtitlesToUrl } from '@/utils/subtitletrans';
-import Storage from '@/utils/storage';
+import SessionsStorage from '@/utils/sessionstorage';
 import { Cross2Icon, EraserIcon } from "@radix-ui/react-icons"
 import { useWaveSurfer } from '@/components/subtitle/waveSurferContext';
 import { Input } from '@/components/ui/input';
@@ -57,7 +57,7 @@ interface SubtitleTableProps {
  */
 const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubtitles, setSubtitleUrl, subtitle, setSubtitle, scrollIndex }) => {
     const { toast } = useToast();// 业务信息提示
-    const storage = new Storage();// 创建 Storage 实例
+    const storage = new SessionsStorage();// 创建 Storage 实例
     const [history, setHistory] = useState<Subtitle[][]>([]);// 字幕历史记录
     const { waveSurfer } = useWaveSurfer();
 

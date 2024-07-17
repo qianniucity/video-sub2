@@ -44,7 +44,7 @@ const SubtitlePage: React.FC<SubtitlePageProps> = ({ dict }) => {
 
     return (
         <div >
-            <Menu dict={dict.common} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} subtitles={subtitles} setVideoUrl={setVideoUrl} />
+            <Menu dict={dict.common} subtitleUrl={subtitleUrl} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} subtitles={subtitles} setVideoUrl={setVideoUrl} />
             <div className="border-t border-gray-200" ></div>
             <WaveSurferProvider videoRef={videoRef} videoUrl={videoUrl}>
                 <div className="flex flex-wrap mt-2">

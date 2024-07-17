@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getExt, convertToSrtFormat, getName, processMediaFileAndGetUrl } from '@/utils/common';
 import { processSubtitleFileType, urlToArr, vttToUrl } from '@/utils/subtitletrans';
 import Subtitle from '@/type/subtitle';
 import { useToast } from '@/components/ui/use-toast';
 import { Label } from "@/components/ui/label"
-import Storage from '@/utils/storage';
+import SessionsStorage from '@/utils/sessionstorage';
 import Image from 'next/image';
 import { ModeToggle } from './darkmodel/modeToggle';
 import { LocaleChange } from '@/components/ui/locale-change';
@@ -15,17 +15,18 @@ type Dictionary = Record<string, string>;
 
 interface FileUploadProps {
     dict: Dictionary;
+    subtitleUrl: string;
     setSubtitleUrl: (url: string) => void;
     setSubtitles: (subtitles: Subtitle[]) => void;
     subtitles: Subtitle[];
     setVideoUrl: (url: string) => void;
 }
 
-const Menu: React.FC<FileUploadProps> = ({ dict, setSubtitleUrl, setSubtitles, subtitles, setVideoUrl }) => {
+const Menu: React.FC<FileUploadProps> = ({ dict, subtitleUrl, setSubtitleUrl, setSubtitles, subtitles, setVideoUrl }) => {
     const [subtitleContent, setSubtitleContent] = useState('');// 使用 useState 管理字幕原始内容 状态
     const [originalFileName, setOriginalFileName] = React.useState<string>('defaultName');// 字幕文件名
     const { toast } = useToast();// 业务信息提示
-    const storage = new Storage();// 创建 Storage 实例
+    const storage = new SessionsStorage();// 创建 Storage 实例
 
     /**
      * 上传字幕文件,读取字幕文件并获取字幕URL
@@ -152,6 +153,24 @@ const Menu: React.FC<FileUploadProps> = ({ dict, setSubtitleUrl, setSubtitles, s
         storage.del('subtitles');
         // window.location.reload();
     }
+
+    useEffect(() => {
+        const subArray = urlToArr(subtitleUrl)
+        subArray.then((subList) => {
+            if (setSubtitles && subList.length > 0) setSubtitles(subList);
+            saveSubtitles(subList);
+            toast({
+                title: "Success",
+                description: "uploadSubtitle Success",
+            })
+        }).catch((error) => {
+            toast({
+                title: "Error",
+                description: "subArray Error",
+            })
+            console.error('subArray Error', error); // 如果Promise被拒绝，这里会捕获到错误
+        });
+    }, []);
     return (
         <nav className=" bg-white border-gray-200 dark:bg-gray-900">
             <div className="flex flex-wrap items-center justify-between  mx-auto p-2">
@@ -171,6 +190,7 @@ const Menu: React.FC<FileUploadProps> = ({ dict, setSubtitleUrl, setSubtitles, s
                                 </div>
                                 <input
                                     id="video-file"
+                                    accept='.mp4,.webm,.mov,.avi,.wmv,.flv,.mkv'
                                     onChange={uploadVideo}
                                     type='file'
                                     className='hidden' />
@@ -185,6 +205,7 @@ const Menu: React.FC<FileUploadProps> = ({ dict, setSubtitleUrl, setSubtitles, s
                                 </div>
                                 <input
                                     id="subtitles-file"
+                                    accept='.vtt,.srt,.ass'
                                     onChange={uploadSubtitle}
                                     type='file'
                                     className='hidden' />

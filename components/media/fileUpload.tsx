@@ -4,7 +4,7 @@ import { processSubtitleFileType, srtToVtt, urlToArr, vttToUrl } from '@/utils/s
 import Subtitle from '@/type/subtitle';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from "@/components/ui/input"
-import Storage from '@/utils/storage';
+import SessionsStorage from '@/utils/sessionstorage';
 
 interface FileUploadProps {
     setSubtitleUrl: (url: string) => void;
@@ -27,7 +27,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ setSubtitleUrl, setSubtitles, s
     const [subtitleContent, setSubtitleContent] = useState('');// 使用 useState 管理字幕原始内容 状态
     const [originalFileName, setOriginalFileName] = React.useState<string>('defaultName');// 字幕文件名
     const { toast } = useToast();// 业务信息提示
-    const storage = new Storage();// 创建 Storage 实例
+    const storage = new SessionsStorage();// 创建 Storage 实例
 
     /**
      * 上传字幕文件,读取字幕文件并获取字幕URL
