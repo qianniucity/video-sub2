@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import SubtitlePage from '@/components/subtitlepage';
 import React from 'react';
 import type { Locale } from "@/config/i18n-config";
