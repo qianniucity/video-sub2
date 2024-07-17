@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import SubtitleStyle from './control/subtitleStyle';
-import { Label } from './ui/label';
-import { useWaveSurfer } from './waveSurferContext';
+import SubtitleStyle from './subtitleStyle';
+import { Label } from '../ui/label';
+import { useWaveSurfer } from '../subtitle/waveSurferContext';
 
 interface Dictionary {
     // 根据你的 JSON 结构定义类型

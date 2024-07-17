@@ -1,4 +1,4 @@
-import VideoPage from '@/components/videoPage';
+import VideoPage from '@/components/videoSubPage';
 import React from 'react';
 import type { Locale } from "@/config/i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";

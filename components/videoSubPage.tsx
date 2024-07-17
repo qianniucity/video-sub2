@@ -2,12 +2,12 @@
 
 import React, { useRef, useState } from 'react';
 import VideoPlayer from './videoPlayer';
-import SubtitleTable from './subtitleTable';
+import SubtitleTable from './subtitle/subtitleTable';
 import Subtitle from '@/type/subtitle';
-import Console from './console';
+import Console from './control/console';
 import Menu from './menu';
-import { WaveSurferProvider } from './waveSurferContext';
-import WaveformViewer from './waveformViewer';
+import { WaveSurferProvider } from './subtitle/waveSurferContext';
+import WaveformViewer from './subtitle/waveformViewer';
 
 const defaultVideoUrl = '/video/video.mp4';
 const defaultSubtitleUrl = '/video/ap.vtt';

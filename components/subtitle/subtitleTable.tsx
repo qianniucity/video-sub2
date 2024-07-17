@@ -9,7 +9,7 @@ import { subtitlesToUrl } from '@/utils/subtitletrans';
 import Storage from '@/utils/storage';
 import { Cross2Icon, EraserIcon } from "@radix-ui/react-icons"
 import { useWaveSurfer } from './waveSurferContext';
-import { Input } from './ui/input';
+import { Input } from '../ui/input';
 
 import {
     Tooltip,
