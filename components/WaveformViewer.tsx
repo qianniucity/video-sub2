@@ -56,7 +56,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ subtitles, setScrollInd
 
 
         // 添加区域事件监听
-        wsRegions.on('region-updated', (region: { start: number | undefined; end: number | undefined; content: { textContent: any; }; id: any; }) => {
+        wsRegions.on('region-updated', (region: { start: number | undefined; end: number | undefined; content?: HTMLElement | undefined; id: any; }) => {
             console.log('Updated region', region);
             console.log('region-start', region.start);
             console.log('region-end', region.end);
@@ -66,7 +66,7 @@ const WaveformViewer: React.FC<WaveformViewerProps> = ({ subtitles, setScrollInd
             updateSubtitle(Number(region.id), subnew);
         });
 
-        wsRegions.on('region-in', (region: { content: any; id: any; }) => {
+        wsRegions.on('region-in', (region: { content?: HTMLElement | undefined; id: any; }) => {
             // console.log("region-in-id", region.id)
             console.log("region-in", region.content)
             setScrollIndex(Number(region.id))
