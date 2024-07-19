@@ -1,17 +1,29 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useAtomValue } from 'jotai';
+import {
+    fontSizeAtom,
+    lineHeightAtom,
+    showTextShadowAtom,
+    showBackgroundColorAtom,
+    subtitleColorAtom,
+    subtitleUrlAtom,
+    videoUrlAtom
+} from '@/atoms/subtitle-atoms';
+
 
 interface VideoPlayerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
-    videoUrl?: string;
-    subtitleUrl?: string;
-    fontSize: number;
-    lineHeight: number;
-    showTextShadow: boolean;
-    subtitleColor: string;
-    showBackgroundColor: boolean;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef, videoUrl, subtitleUrl, fontSize, lineHeight, showTextShadow, subtitleColor, showBackgroundColor }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoRef }) => {
+    const videoUrl = useAtomValue(videoUrlAtom);
+    const subtitleUrl = useAtomValue(subtitleUrlAtom);
+    const fontSize = useAtomValue(fontSizeAtom);
+    const lineHeight = useAtomValue(lineHeightAtom);
+    const showTextShadow = useAtomValue(showTextShadowAtom);
+    const subtitleColor = useAtomValue(subtitleColorAtom);
+    const showBackgroundColor = useAtomValue(showBackgroundColorAtom);
+
     useEffect(() => {
         const style = document.createElement('style');
         style.textContent = `

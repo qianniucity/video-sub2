@@ -1,16 +1,13 @@
 "use client"
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import SubtitleTable from '@/components/subtitle/subtitleTable';
-import Subtitle from '@/type/subtitle';
 import Console from '@/components/control/console';
 import Menu from '@/components/menu';
 import { WaveSurferProvider } from '@/components/subtitle/waveSurferContext';
 import WaveformViewer from '@/components/subtitle/waveformViewer';
 import VideoPlayer from '@/components/player';
 
-const defaultVideoUrl = '/video/video.mp4';
-const defaultSubtitleUrl = '/video/ap.vtt';
 
 interface Dictionary {
     // 根据你的 JSON 结构定义类型
@@ -29,56 +26,27 @@ interface SubtitlePageProps {
 const SubtitlePage: React.FC<SubtitlePageProps> = ({ dict }) => {
 
     const videoRef = useRef<HTMLVideoElement>(null);// 用于引用视频元素
-    const [subtitleUrl, setSubtitleUrl] = useState<string>(defaultSubtitleUrl);// 字幕URL
-    const [videoUrl, setVideoUrl] = useState<string>(defaultVideoUrl);// 视频URL
-    const [subtitles, setSubtitles] = useState<Subtitle[]>([]);// 字幕数组
-    const [subtitle, setSubtitle] = useState<Subtitle>(new Subtitle({ start: '', end: '', text: '' })); // 当前字幕 
-    const [scrollIndex, setScrollIndex] = useState(-1);// 滚动索引  默认为-1
-
-
-    const [fontSize, setFontSize] = useState(30);
-    const [lineHeight, setLineHeight] = useState(16);
-    const [showTextShadow, setShowTextShadow] = useState(false);
-    const [subtitleColor, setSubtitleColor] = useState('#FFFFFF'); // 默认颜色为白色
-    const [showBackgroundColor, setShowBackgroundColor] = useState(false);
 
     return (
         <div >
-            <Menu dict={dict.common} subtitleUrl={subtitleUrl} setSubtitleUrl={setSubtitleUrl} setSubtitles={setSubtitles} subtitles={subtitles} setVideoUrl={setVideoUrl} />
+            <Menu dict={dict.common} />
             <div className="border-t border-gray-200" ></div>
-            <WaveSurferProvider videoRef={videoRef} videoUrl={videoUrl}>
+            <WaveSurferProvider videoRef={videoRef}>
                 <div className="flex flex-wrap mt-2">
                     <div className="w-full md:w-1/2">
                         <VideoPlayer
                             videoRef={videoRef}
-                            videoUrl={videoUrl}
-                            subtitleUrl={subtitleUrl}
-                            fontSize={fontSize}
-                            lineHeight={lineHeight}
-                            showTextShadow={showTextShadow}
-                            subtitleColor={subtitleColor}
-                            showBackgroundColor={showBackgroundColor}
                         />
                         <Console
                             dict={dict.control}
-                            fontSize={fontSize}
-                            setFontSize={setFontSize}
-                            lineHeight={lineHeight}
-                            setLineHeight={setLineHeight}
-                            showTextShadow={showTextShadow}
-                            setShowTextShadow={setShowTextShadow}
-                            subtitleColor={subtitleColor}
-                            setSubtitleColor={setSubtitleColor}
-                            showBackgroundColor={showBackgroundColor}
-                            setShowBackgroundColor={setShowBackgroundColor}
                         />
                     </div>
                     <div className="w-full md:w-1/2 h-full">
-                        <SubtitleTable dict={dict.subtitle_table} subtitles={subtitles} setSubtitles={setSubtitles} setSubtitleUrl={setSubtitleUrl} subtitle={subtitle} setSubtitle={setSubtitle} scrollIndex={scrollIndex} />
+                        <SubtitleTable dict={dict.subtitle_table} />
                     </div>
                 </div>
                 <div className="">
-                    <WaveformViewer subtitles={subtitles} setScrollIndex={setScrollIndex} />
+                    <WaveformViewer />
                 </div>
             </WaveSurferProvider>
         </div>

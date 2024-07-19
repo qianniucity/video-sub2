@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { getExt, convertToSrtFormat, getName, processMediaFileAndGetUrl } from '@/utils/common';
 import { processSubtitleFileType, urlToArr, vttToUrl } from '@/utils/subtitletrans';
 import Subtitle from '@/type/subtitle';
@@ -9,22 +9,30 @@ import Image from 'next/image';
 import { ModeToggle } from './darkmodel/modeToggle';
 import { LocaleChange } from '@/components/ui/locale-change';
 import { UploadIcon, DownloadIcon } from "@radix-ui/react-icons"
+import { useAtom, useSetAtom } from 'jotai';
+import {
+    subtitleUrlAtom,
+    subtitlesAtom,
+    videoUrlAtom,
+    subtitleContentAtom,
+    originalFileNameAtom,
+} from '@/atoms/subtitle-atoms';
+
 
 
 type Dictionary = Record<string, string>;
 
 interface FileUploadProps {
     dict: Dictionary;
-    subtitleUrl: string;
-    setSubtitleUrl: (url: string) => void;
-    setSubtitles: (subtitles: Subtitle[]) => void;
-    subtitles: Subtitle[];
-    setVideoUrl: (url: string) => void;
 }
 
-const Menu: React.FC<FileUploadProps> = ({ dict, subtitleUrl, setSubtitleUrl, setSubtitles, subtitles, setVideoUrl }) => {
-    const [subtitleContent, setSubtitleContent] = useState('');// 使用 useState 管理字幕原始内容 状态
-    const [originalFileName, setOriginalFileName] = React.useState<string>('defaultName');// 字幕文件名
+const Menu: React.FC<FileUploadProps> = ({ dict }) => {
+    const setVideoUrl = useSetAtom(videoUrlAtom);// 视频URL
+    const [subtitleUrl, setSubtitleUrl] = useAtom(subtitleUrlAtom)// 字幕URL
+    const [subtitles, setSubtitles] = useAtom(subtitlesAtom)// 字幕数组
+
+    const [subtitleContent, setSubtitleContent] = useAtom(subtitleContentAtom);// 管理字幕原始内容 状态
+    const [originalFileName, setOriginalFileName] = useAtom(originalFileNameAtom);// 字幕文件名
     const { toast } = useToast();// 业务信息提示
     const storage = new SessionsStorage();// 创建 Storage 实例
 
@@ -159,10 +167,6 @@ const Menu: React.FC<FileUploadProps> = ({ dict, subtitleUrl, setSubtitleUrl, se
         subArray.then((subList) => {
             if (setSubtitles && subList.length > 0) setSubtitles(subList);
             saveSubtitles(subList);
-            toast({
-                title: "Success",
-                description: "uploadSubtitle Success",
-            })
         }).catch((error) => {
             toast({
                 title: "Error",

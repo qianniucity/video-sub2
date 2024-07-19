@@ -1,31 +1,23 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
+import { useAtom } from 'jotai';
+import { fontSizeAtom, lineHeightAtom, showTextShadowAtom, subtitleColorAtom, showBackgroundColorAtom } from '@/atoms/subtitle-atoms';
 
 type Dictionary = Record<string, string>;
 
 interface SubtitleStyleProps {
     dict: Dictionary;
-    fontSize: number;
-    setFontSize: (fontSize: number) => void;
-    lineHeight: number;
-    setLineHeight: (lineHeight: number) => void;
-    showTextShadow: boolean;
-    setShowTextShadow: (showTextShadow: boolean) => void;
-    subtitleColor: string;
-    setSubtitleColor: (subtitleColor: string) => void;
-    showBackgroundColor: boolean;
-    setShowBackgroundColor: (showBackgroundColor: boolean) => void;
-
 }
 
 const SubtitleStyle: React.FC<SubtitleStyleProps> = ({
     dict,
-    fontSize, setFontSize,
-    lineHeight, setLineHeight,
-    showTextShadow, setShowTextShadow,
-    subtitleColor, setSubtitleColor,
-    showBackgroundColor, setShowBackgroundColor
 }) => {
+    const [fontSize, setFontSize] = useAtom(fontSizeAtom);
+    const [lineHeight, setLineHeight] = useAtom(lineHeightAtom);
+    const [showTextShadow, setShowTextShadow] = useAtom(showTextShadowAtom);
+    const [subtitleColor, setSubtitleColor] = useAtom(subtitleColorAtom);
+    const [showBackgroundColor, setShowBackgroundColor] = useAtom(showBackgroundColorAtom);
+
     return (
         <ul role="list" className="space-y-4 text-gray-500 dark:text-gray-400">
             <li className="flex space-x-2  items-center">

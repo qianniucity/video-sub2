@@ -1,24 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import WaveSurfer from 'wavesurfer.js';
+import React, { useEffect } from 'react';
 import Subtitle from '@/type/subtitle';
 import SubtitleTimeLine from '@/type/subtitleTimeLine';
 import { randomColor, secondToTime, timeToSecond } from '@/utils/common';
 import { useWaveSurfer } from '@/components/subtitle/waveSurferContext';
-
-interface WaveformViewerProps {
-    subtitles: Subtitle[];
-    setScrollIndex: (scrollIndex: number) => void;
-}
+import { useAtomValue, useSetAtom } from 'jotai';
+import { scrollIndexAtom, subtitlesAtom } from '@/atoms/subtitle-atoms';
 
 /**
  * 波形图组件
- * @param param0  {Array} subtitles - 字幕数组
- * @param param1  {Function} setScrollIndex - 设置滚动索引
  * @returns 
  */
-const WaveformViewer: React.FC<WaveformViewerProps> = ({ subtitles, setScrollIndex }) => {
+const WaveformViewer: React.FC = () => {
     const { waveSurfer, waveContainerRef, wsRegions } = useWaveSurfer();
-
+    const subtitles = useAtomValue(subtitlesAtom);
+    const setScrollIndex = useSetAtom(scrollIndexAtom);
 
     /**
      * 字幕填充到波形图

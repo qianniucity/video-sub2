@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import React, { createContext, useContext, useEffect, ReactNode, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
 import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import Minimap from 'wavesurfer.js/dist/plugins/minimap.esm.js'
+import { useAtom, useAtomValue } from 'jotai';
+import { waveSurferAtom, wsRegionsAtom, videoUrlAtom } from '@/atoms/subtitle-atoms';
 
 /**
  * 创建 Context，现在包括 WaveSurfer 实例和容器 ref
@@ -13,20 +15,20 @@ const WaveSurferContext = createContext<{ [x: string]: any; waveSurfer: WaveSurf
 interface WaveSurferProviderProps {
     children: ReactNode;
     videoRef: React.RefObject<HTMLVideoElement>;
-    videoUrl: string;
 }
 
 /**
  * Provider 组件 - 初始化 WaveSurfer 实例，添加插件，设置参数，返回波形图实例 
  * @param param0  {ReactNode} children - 子组件
  * @param param1  {React.RefObject} videoRef - 视频元素引用
- * @param param2  {string} videoUrl - 视频URL
  * @returns 
  */
-export const WaveSurferProvider = ({ children, videoRef, videoUrl }: WaveSurferProviderProps) => {
-    const [waveSurfer, setWaveSurfer] = useState<WaveSurfer | null>(null);
+export const WaveSurferProvider = ({ children, videoRef }: WaveSurferProviderProps) => {
+    const [waveSurfer, setWaveSurfer] = useAtom(waveSurferAtom);
+    const [wsRegions, setWsRegions] = useAtom(wsRegionsAtom);// 区域插件
+    const videoUrl = useAtomValue(videoUrlAtom)
+
     const waveContainerRef = useRef<HTMLDivElement>(null); // 波形图容器引用
-    const [wsRegions, setWsRegions] = useState<RegionsPlugin>({} as RegionsPlugin);// 区域插件
     const waveSurferRef = useRef<WaveSurfer>(); // 波形图引用
     const sliderRef = useRef<HTMLInputElement>(null);// 缩放滑块引用
 

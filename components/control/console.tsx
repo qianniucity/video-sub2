@@ -1,7 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import SubtitleStyle from '@/components/control/subtitleStyle';
 import { Label } from '@/components/ui/label';
 import { useWaveSurfer } from '@/components/subtitle/waveSurferContext';
+import { useAtom } from 'jotai';
+import {
+    activeTabAtom,
+} from '@/atoms/subtitle-atoms';
 
 interface Dictionary {
     // 根据你的 JSON 结构定义类型
@@ -10,29 +14,14 @@ interface Dictionary {
 
 interface SettingProps {
     dict: Dictionary;
-    fontSize: number;
-    setFontSize: (fontSize: number) => void;
-    lineHeight: number;
-    setLineHeight: (lineHeight: number) => void;
-    showTextShadow: boolean;
-    setShowTextShadow: (showTextShadow: boolean) => void;
-    subtitleColor: string;
-    setSubtitleColor: (subtitleColor: string) => void;
-    showBackgroundColor: boolean;
-    setShowBackgroundColor: (showBackgroundColor: boolean) => void;
-
 }
 
 
 const Console: React.FC<SettingProps> = ({
     dict,
-    fontSize, setFontSize,
-    lineHeight, setLineHeight,
-    showTextShadow, setShowTextShadow,
-    subtitleColor, setSubtitleColor,
-    showBackgroundColor, setShowBackgroundColor
+
 }) => {
-    const [activeTab, setActiveTab] = useState('#subtitles-type');
+    const [activeTab, setActiveTab] = useAtom(activeTabAtom);
     const { sliderRef } = useWaveSurfer();
 
 
@@ -61,7 +50,7 @@ const Console: React.FC<SettingProps> = ({
             </ul>
             <div id="defaultTabContent">
                 <div className={`${activeTab === '#subtitles-type' ? 'block' : 'hidden'} p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800`} id="subtitles-type" role="tabpanel" aria-labelledby="subtitles-type-tab">
-                    <SubtitleStyle dict={dict.subtitle_setting} fontSize={fontSize} setFontSize={setFontSize} lineHeight={lineHeight} setLineHeight={setLineHeight} showTextShadow={showTextShadow} setShowTextShadow={setShowTextShadow} subtitleColor={subtitleColor} setSubtitleColor={setSubtitleColor} showBackgroundColor={showBackgroundColor} setShowBackgroundColor={setShowBackgroundColor} />
+                    <SubtitleStyle dict={dict.subtitle_setting} />
                 </div>
                 <div className={`${activeTab === '#subtitles-edit' ? 'block' : 'hidden'} p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800`} id="subtitles-edit" role="tabpanel" aria-labelledby="subtitles-edit-tab">
                     <ul role="list" className="space-y-4 text-gray-500 dark:text-gray-400">

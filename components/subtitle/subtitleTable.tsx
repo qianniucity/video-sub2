@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Column, Table, AutoSizer } from 'react-virtualized';
 import 'react-virtualized/styles.css'; // 导入样式
 import { cn } from "@/lib/utils";
@@ -17,6 +17,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { historyAtom, scrollIndexAtom, subtitleAtom, subtitlesAtom, subtitleUrlAtom } from '@/atoms/subtitle-atoms';
 
 
 // TODO Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Grid which is inside StrictMode. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here:
@@ -31,34 +33,24 @@ import {
 
 type Dictionary = Record<string, string>;
 
-
-/**
- * 字幕表格组件参数
- * @interface SubtitleTableProps  字幕表格组件参数
- * @property {Subtitle[]} subtitles  字幕数组
- * @property {(subtitles: Subtitle[]) => void} setSubtitles  设置字幕数组
- * @property {(url: string) => void} [setSubtitleUrl]  设置字幕地址
- * @property {Subtitle} subtitle  当前字幕
- * @property {(subtitle: Subtitle) => void} setSubtitle  设置当前字幕
- * @property {number} scrollIndex  滚动索引
- */
 interface SubtitleTableProps {
     dict: Dictionary;
-    subtitles: Subtitle[];
-    setSubtitles: (subtitles: Subtitle[]) => void;
-    setSubtitleUrl?: (url: string) => void;
-    subtitle: Subtitle;
-    setSubtitle: (subtitle: Subtitle) => void;
-    scrollIndex: number;
 }
 
 /**
  * 字幕表格组件
  */
-const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict, subtitles, setSubtitles, setSubtitleUrl, subtitle, setSubtitle, scrollIndex }) => {
+const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict }) => {
+    const [history, setHistory] = useAtom(historyAtom);// 字幕历史记录
+    const [subtitles, setSubtitles] = useAtom(subtitlesAtom);// 字幕数组
+    const setSubtitle = useSetAtom(subtitleAtom); // 当前字幕
+    const setSubtitleUrl = useSetAtom(subtitleUrlAtom);// 字幕URL
+    const scrollIndex = useAtomValue(scrollIndexAtom);// 滚动索引  默认为-1
+
+
     const { toast } = useToast();// 业务信息提示
     const storage = new SessionsStorage();// 创建 Storage 实例
-    const [history, setHistory] = useState<Subtitle[][]>([]);// 字幕历史记录
+
     const { waveSurfer } = useWaveSurfer();
 
 
