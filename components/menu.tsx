@@ -180,7 +180,7 @@ const Menu: React.FC<FileUploadProps> = ({ dict }) => {
             <div className="flex flex-wrap items-center justify-between  mx-auto p-2">
                 <div className='items-center justify-between  w-full md:flex md:w-auto space-x-5'>
                     <a href="https://qianniuspace.com" className="flex space-x-2 ">
-                        <Image src="favicon.svg" alt="Flowbite Logo" width={32} height={32} />
+                        <Image src="favicon.svg" alt="Qianniu Logo" width={32} height={32} />
                         <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">videoSub2</span>
                     </a>
                     <ul className="flex  flex-col items-center mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 ">
