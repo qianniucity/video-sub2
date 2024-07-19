@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { Column, Table, AutoSizer } from 'react-virtualized';
-import 'react-virtualized/styles.css'; // 导入样式
+import React, { useEffect, useRef } from 'react';
+import { FixedSizeList as List } from 'react-window';
 import { cn } from "@/lib/utils";
 import Subtitle from '@/type/subtitle';
 import { checkTime, sleep, timeToSecond } from '@/utils/common';
@@ -52,6 +51,8 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict }) => {
     const storage = new SessionsStorage();// 创建 Storage 实例
 
     const { waveSurfer } = useWaveSurfer();
+
+    const listRef = useRef<List>(null); // 创建引用
 
 
     /**
@@ -217,122 +218,121 @@ const SubtitleTable: React.FC<SubtitleTableProps> = ({ dict }) => {
         console.log('Subtitles changed');
     }, [subtitles]);
 
+    useEffect(() => {
+        if (listRef.current) {
+            listRef.current.scrollToItem(scrollIndex);
+        }
+    }, [scrollIndex]); // 监听 scrollIndex 的变化
+
+
+
+    const ColumnHeaders = () => (
+        <div className="flex text-base text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+            <div className="row w-12 text-center px-6 py-3">
+                #
+            </div>
+            <div className="row w-28 text-center px-6 py-3">
+                {dict.subtitle_start}
+            </div>
+            <div className="row w-28 text-center px-6 py-3">
+                {dict.subtitle_end}
+            </div>
+            <div className="row w-20 text-center px-6 py-3">
+                {dict.subtitle_duration}
+            </div>
+            <div className="row flex-1 text-center px-6 py-3">
+                {dict.subtitle_text}
+            </div>
+            <div className="row w-40 text-center px-6 py-3">
+                {dict.subtitle_operation}
+            </div>
+        </div>
+    );
+
+
+    const Row = ({ index, style }: { index: number, style: React.CSSProperties }) => {
+        console.log("rowData", subtitles);
+        const rowData = subtitles[index];
+
+        return (
+            <div
+                style={style}
+                className={`flex items-center border-b ${index % 2 ? 'bg-gray-200 dark:bg-gray-800' : 'bg-gray-100 dark:bg-gray-700'} ${index === scrollIndex ? 'bg-rose-300 dark:bg-zinc-600' : ''}`}
+                onClick={() => handleRowClick(rowData)}
+            >
+                {/* 行内容 */}
+                <div className="w-12 text-center  font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {index + 1}
+                </div>
+                <div className="w-28 text-center ">
+                    <span className="">{rowData.start}</span>
+                    {/* <Input
+                        disabled
+                        maxLength={20}
+                        className=""
+                        value={rowData.start}
+                    /> */}
+                </div>
+                <div className="w-28 text-center">
+                    <span className="">{rowData.end}</span>
+                    {/* <Input
+                        disabled
+                        maxLength={20}
+                        className=""
+                        value={rowData.end}
+                    /> */}
+                </div>
+                <div className="w-20 text-center ">
+                    <span className=" items-center text-center ">{rowData.duration}</span>
+                    {/* <Input
+                        disabled
+                        maxLength={20}
+                        className=""
+                        value={rowData.duration}
+                    /> */}
+                </div>
+                <div className="flex-1 rounded-none">
+                    <span className={` ${index == scrollIndex ? 'hidden' : ''}`}>
+                        {rowData.text}
+                    </span>
+                    <input
+                        disabled={index != scrollIndex}
+                        maxLength={100}
+                        className={`w-full border-0 ${index == scrollIndex ? '' : 'hidden'}`}
+                        value={rowData.text}
+                        onChange={e => onChange('text', e.target.value, rowData)}
+                        autoFocus={index == scrollIndex}
+                    />
+                </div>
+                <div className="flex w-20 " >
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <EraserIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-0 dark:scale-100" onClick={() => onRemove(index)} />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{cn("del line")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
+            </div>
+        );
+    };
 
     return (
-        <AutoSizer disableHeight>
-            {({ width }) => (
-                <div className="flex w-full text-sm text-gray-500 dark:text-gray-400">
-                    <Table
-                        width={width}
-                        height={1020}
-                        headerHeight={20}
-                        rowHeight={30}
-                        rowCount={subtitles.length}
-                        rowGetter={({ index }) => subtitles[index]}
-                        scrollToIndex={scrollIndex}
-
-                        headerRowRenderer={() => {
-                            return (
-                                <div className="flex text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <div className="row w-12 text-center px-6 py-3">
-                                        #
-                                    </div>
-                                    <div className="row w-28 text-center px-6 py-3">
-                                        {dict.subtitle_start}
-                                    </div>
-                                    <div className="row w-28 text-center px-6 py-3">
-                                        {dict.subtitle_end}
-                                    </div>
-                                    <div className="row w-20 text-center px-6 py-3">
-                                        {dict.subtitle_duration}
-                                    </div>
-                                    <div className="row flex-1 text-center px-6 py-3">
-                                        {dict.subtitle_text}
-                                    </div>
-                                    <div className="row w-40 text-center px-6 py-3">
-                                        {dict.subtitle_operation}
-                                    </div>
-                                </div>
-                            );
-                        }}
-                        rowRenderer={props => {
-                            return (
-                                <div
-                                    key={props.key}
-                                    className={`flex items-center  border-b  ${props.index % 2 ? 'bg-gray-200  dark:bg-gray-800 dark:border-gray-700' : 'bg-gray-100 dark:bg-gray-700 dark:border-gray-600'} 
-                                    ${props.index == scrollIndex ? 'bg-rose-300 dark:bg-zinc-100' : ''} 
-                            
-                                    ${checkSubtitleIllegal(props.rowData) ? '' : 'bg-red-500'}`}
-                                    style={props.style}
-                                    onClick={() => handleRowClick(props.rowData)} // 添加点击事件处理器
-                                >
-                                    <div className="w-12 text-center py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {props.index + 1}
-                                    </div>
-                                    <div className="w-28">
-                                        {/* <span className="edit">{props.rowData.start}</span> */}
-                                        <Input
-                                            disabled
-                                            maxLength={20}
-                                            className="py-4"
-                                            value={props.rowData.start}
-                                        // onChange={e => onChange('start', e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="w-28">
-                                        {/* <span className="">{props.rowData.end}</span> */}
-                                        <Input
-                                            disabled
-                                            maxLength={20}
-                                            className="py-4"
-                                            value={props.rowData.end}
-                                        // onChange={e => onChange('end', e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="w-20 ">
-                                        {/* <span className="edit">{props.rowData.duration}</span> */}
-                                        <Input
-                                            disabled
-                                            maxLength={20}
-                                            className="py-4"
-                                            value={props.rowData.duration}
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <span className={`py-4 ${props.index == scrollIndex ? 'hidden' : ''}`}>
-                                            {/* {props.rowData.text.split(/\r?\n/).map((item: string, index: React.Key | null | undefined) => (
-                                                <p key={index} className="m-0">{escapeHTML(item)}</p>
-                                            ))} */}
-                                            {props.rowData.text}
-                                        </span>
-                                        <Input
-                                            disabled={props.index != scrollIndex}
-                                            maxLength={100}
-                                            className={`py-4 ${props.index == scrollIndex ? '' : 'hidden'}`}
-                                            value={props.rowData.text}
-                                            onChange={e => onChange('text', e.target.value, props.rowData)}
-                                        />
-                                    </div>
-                                    <div className="flex w-20 " >
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger>
-                                                    <EraserIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-0 dark:scale-100" onClick={() => onRemove(props.index)} />
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>{cn("del line")}</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    </div>
-                                </div>
-                            );
-                        }}
-                    >
-                    </Table>
-                </div>
-            )}
-        </AutoSizer>
+        <>
+            <ColumnHeaders />
+            <List
+                height={1020}
+                itemCount={subtitles.length}
+                itemSize={35}
+                width="100%"
+                ref={listRef}
+            >
+                {Row}
+            </List>
+        </>
     );
 };
 

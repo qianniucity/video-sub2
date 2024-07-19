@@ -62,8 +62,8 @@ const WaveformViewer: React.FC = () => {
         });
 
         wsRegions.on('region-in', (region: { content?: HTMLElement | undefined; id: any; }) => {
-            // console.log("region-in-id", region.id)
-            console.log("region-in", region.content)
+            console.log("region-in-id", region.id)
+            // console.log("region-in", region.content)
             setScrollIndex(Number(region.id))
         })
         wsRegions.on('region-out', (region: { id: any; }) => {
