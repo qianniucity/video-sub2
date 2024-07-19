@@ -1,40 +1,58 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 字幕在线编辑工具
 
-## Getting Started
+这是一个用于在线编辑视频字幕的工具。它允许用户添加、删除、合并以及修改字幕，提供了一个直观的界面来简化字幕编辑过程。
 
-First, run the development server:
+## 功能特点
+
+- **添加字幕**：用户可以在视频的任意时间点插入新的字幕。
+- **删除字幕**：支持删除单个字幕或一次性删除所有字幕。
+- **编辑字幕**：支持对字幕文本进行编辑，包括修改字幕的开始和结束时间。
+- **高亮显示**：编辑中的字幕会被高亮显示，方便用户识别。
+
+## 开始使用
+
+以下指南将帮助你在本地机器上安装和运行项目，用于开发和测试目的。
+
+### 先决条件
+
+在开始之前，你需要安装以下软件：
+
+- Node.js
+- npm
+- nvm (可选), 推荐使用 nvm 来管理 Node.js 版本。
+
+# 检查 Node.js 安装
+node --version
+
+# 检查 npm 安装
+npm --version
+
+
+## 安装
+### 1.克隆仓库
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone https://github.com/qianniucity/video-sub2.git
+cd video-sub2
+```
+### 2.安装项目依赖
+```bash
+bun install
+```
+注意：如果你使用的是 nvm，请确保你的 Node.js 版本正确。
+```bash
+nvm install
+```
+### 3.启动开发服务器
+```bash
 bun dev
 ```
+### 4.打开浏览器
+在浏览器中打开 http://localhost:3000/ 查看项目。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 ## 技术栈
-使用 jotai 管理全局状态
-使用 wavesurfer 管理音频，波形图
+- React - 前端框架
+- Node.js - 服务器环境
+- jotai - 状态管理
+- wavesurfer.js - 音频可视化
